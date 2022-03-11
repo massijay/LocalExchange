@@ -32,11 +32,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        binding.detailsLayout.post(() -> {
+            if (mMap != null) {
+                int bottomPadding = binding.detailsLayout.getHeight();
+                Log.i("AAA", "Bottom padding = " + bottomPadding);
+                mMap.setPadding(0, 0, 0, bottomPadding);
+            }
+        });
+
+
+        binding.testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("AAA", "Cliccato");
+                Intent intent = new Intent(v.getContext(), SecondActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     /**
