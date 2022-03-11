@@ -1,9 +1,16 @@
 package com.mcris.localexchange.models;
 
+import android.graphics.Bitmap;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.google.maps.android.clustering.ClusterItem;
 
-public class Item {
+public class Item implements ClusterItem {
     @SerializedName("Name")
     @Expose
     private String name;
@@ -16,6 +23,15 @@ public class Item {
     @SerializedName("ID")
     @Expose
     private String id;
+    @SerializedName("Description")
+    @Expose
+    private String description;
+
+    @SerializedName("Price")
+    @Expose
+    private Double price;
+
+    private Bitmap markerBitmap;
 
     public String getName() {
         return name;
@@ -47,5 +63,51 @@ public class Item {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public LatLng getLatLng() {
+        return new LatLng(latitude, longitude);
+    }
+
+    @NonNull
+    @Override
+    public LatLng getPosition() {
+        return getLatLng();
+    }
+
+    @Nullable
+    @Override
+    public String getTitle() {
+        return name;
+    }
+
+    @Nullable
+    @Override
+    public String getSnippet() {
+        return description;
+    }
+
+    public Bitmap getMarkerBitmap() {
+        return markerBitmap;
+    }
+
+    public void setMarkerBitmap(Bitmap markerBitmap) {
+        this.markerBitmap = markerBitmap;
     }
 }

@@ -42,8 +42,10 @@ public class AirtableApiService {
     private final String itemsBaseQuery = baseUrl + "Item?" +
             "fields%5B%5D=ID" +
             "&fields%5B%5D=Name" +
+            "&fields%5B%5D=Description" +
             "&fields%5B%5D=Latitude" +
-            "&fields%5B%5D=Longitude";
+            "&fields%5B%5D=Longitude" +
+            "&fields%5B%5D=Price";
 
 
     public GsonRequest<Table<Item>> requestItemTable(Response.Listener<Table<Item>> listener, Response.ErrorListener errorListener) {
