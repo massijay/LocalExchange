@@ -26,10 +26,12 @@ public class Item implements ClusterItem {
     @SerializedName("Description")
     @Expose
     private String description;
-
     @SerializedName("Price")
     @Expose
     private Double price;
+    @SerializedName("Picture")
+    @Expose
+    private String pictureUrl;
 
     private Bitmap markerBitmap;
 
@@ -83,6 +85,14 @@ public class Item implements ClusterItem {
 
     public LatLng getLatLng() {
         return new LatLng(latitude, longitude);
+    }
+
+    public String getPictureUrl() {
+        return pictureUrl;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
     }
 
     @NonNull

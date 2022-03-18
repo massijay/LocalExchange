@@ -9,7 +9,6 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:id="@+id/markerImageView"
-        android:src="@drawable/test_product"
         android:scaleType="centerCrop"
         android:contentDescription="placeholder description" />
 

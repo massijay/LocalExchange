@@ -2,6 +2,7 @@ package com.mcris.localexchange.views;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.RequestQueue;
@@ -21,6 +23,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.maps.android.clustering.ClusterManager;
 import com.mcris.localexchange.R;
 import com.mcris.localexchange.databinding.ActivityMainBinding;
@@ -106,10 +112,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         response -> {
                             for (Record<Item> record : response.getRecords()) {
                                 Item item = record.getRow();
-                                item.setMarkerBitmap(drawBitmapMarker(item));
-                                clusterManager.addItem(item);
+                                if (item.getPictureUrl() == null || item.getPictureUrl().isEmpty()) {
+                                    item.setMarkerBitmap(drawBitmapMarker(item, null));
+                                    clusterManager.addItem(item);
+                                    clusterManager.cluster();
+                                } else {
+                                    FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                                    StorageReference imgRef = storage.getReferenceFromUrl(item.getPictureUrl());
+
+                                    final long FIVE_MEGABYTES = 5 * 1024 * 1024;
+                                    imgRef.getBytes(FIVE_MEGABYTES)
+                                            .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                                                @Override
+                                                public void onSuccess(byte[] bytes) {
+                                                    Bitmap pic = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                                    item.setMarkerBitmap(drawBitmapMarker(item, pic));
+                                                    clusterManager.addItem(item);
+                                                    clusterManager.cluster();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+
+                                                }
+                                            });
+                                }
                             }
-                            mMap.moveCamera(CameraUpdateFactory.zoomTo(17));
                         },
                         error -> Toast.makeText(MainActivity.this, "ERRORE: " + error.getMessage(), Toast.LENGTH_LONG).show());
         queue.add(itemTableRequest);
@@ -127,17 +157,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.i("AAA", "STOP MainActivity");
     }
 
-    public Bitmap drawBitmapMarker(Item item) {
+    public Bitmap drawBitmapMarker(Item item, Bitmap picture) {
         View markerLayout = getLayoutInflater().inflate(R.layout.custom_marker_layout, binding.getRoot(), false);
         ImageView imageView = markerLayout.findViewById(R.id.markerImageView);
         TextView mainTextView = markerLayout.findViewById(R.id.mainTextView);
         TextView priceTextView = markerLayout.findViewById(R.id.priceTextView);
 
-        imageView.setImageResource(R.drawable.test_product);
-        imageView.setContentDescription(item.getName());
         mainTextView.setText(item.getName());
         priceTextView.setText(String.format(Locale.getDefault(), "%.0f€", item.getPrice()));
 
+        if (item.getPictureUrl() == null || item.getPictureUrl().isEmpty()) {
+            imageView.setVisibility(View.GONE);
+            return renderBitmap(markerLayout);
+        }
+        imageView.setImageBitmap(picture);
+        imageView.setContentDescription(item.getName());
+
+
+        return renderBitmap(markerLayout);
+    }
+
+    @NonNull
+    private Bitmap renderBitmap(View markerLayout) {
         markerLayout.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));

@@ -45,7 +45,8 @@ public class AirtableApiService {
             "&fields%5B%5D=Description" +
             "&fields%5B%5D=Latitude" +
             "&fields%5B%5D=Longitude" +
-            "&fields%5B%5D=Price";
+            "&fields%5B%5D=Price" +
+            "&fields%5B%5D=Picture";
 
 
     public GsonRequest<Table<Item>> requestItemTable(Response.Listener<Table<Item>> listener, Response.ErrorListener errorListener) {
