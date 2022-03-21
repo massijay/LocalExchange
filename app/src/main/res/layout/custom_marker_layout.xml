@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -10,7 +11,7 @@
         android:layout_height="100dp"
         android:id="@+id/markerImageView"
         android:scaleType="centerCrop"
-        android:contentDescription="placeholder description" />
+        tools:src="@drawable/test_product" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,17 +25,18 @@
             android:layout_height="wrap_content"
             android:id="@+id/mainTextView"
             android:layout_weight="1"
-            android:text="Placeholder"
             android:ellipsize="end"
-            android:maxLines="1" />
+            android:maxLines="1"
+            tools:text="Placeholder" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/priceTextView"
             android:layout_weight="0"
-            android:text="XX€"
-            android:layout_marginLeft="2dp" />
+            android:layout_marginLeft="2dp"
+            tools:ignore="RtlHardcoded"
+            tools:text="XX€" />
     </LinearLayout>
 
 </LinearLayout>

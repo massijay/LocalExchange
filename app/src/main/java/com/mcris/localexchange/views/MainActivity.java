@@ -23,8 +23,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.maps.android.clustering.ClusterManager;
@@ -65,13 +63,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
 
-        binding.testButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("AAA", "Cliccato");
-                Intent intent = new Intent(v.getContext(), SecondActivity.class);
-                startActivity(intent);
-            }
+        binding.testButton.setOnClickListener(v -> {
+            Log.i("AAA", "Cliccato");
+            Intent intent = new Intent(v.getContext(), SecondActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -90,8 +85,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        clusterManager = new ClusterManager<Item>(this, mMap);
-        clusterManager.setRenderer(new CustomClusterRenderer<Item>(this, mMap, clusterManager));
+        clusterManager = new ClusterManager<>(this, mMap);
+        clusterManager.setRenderer(new CustomClusterRenderer<>(this, mMap, clusterManager));
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
@@ -123,20 +118,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                                     final long FIVE_MEGABYTES = 5 * 1024 * 1024;
                                     imgRef.getBytes(FIVE_MEGABYTES)
-                                            .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                                                @Override
-                                                public void onSuccess(byte[] bytes) {
-                                                    Bitmap pic = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                                    item.setMarkerBitmap(drawBitmapMarker(item, pic));
-                                                    clusterManager.addItem(item);
-                                                    clusterManager.cluster();
-                                                }
+                                            .addOnSuccessListener(bytes -> {
+                                                Bitmap pic = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                                item.setMarkerBitmap(drawBitmapMarker(item, pic));
+                                                clusterManager.addItem(item);
+                                                clusterManager.cluster();
                                             })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-
-                                                }
+                                            .addOnFailureListener(e -> {
                                             });
                                 }
                             }
