@@ -1,6 +1,6 @@
 package com.mcris.localexchange.views;
 
-import android.content.Intent;
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,7 +9,9 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.maps.android.clustering.ClusterManager;
@@ -49,25 +52,55 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        LinearLayout bottomMenuLayout = findViewById(R.id.bottomMenuLayout);
+        BottomSheetBehavior<LinearLayout> sheetBehavior = BottomSheetBehavior.from(bottomMenuLayout);
+        Button bottomButton = findViewById(R.id.bottomButton);
+        ImageView menuHandler = findViewById(R.id.menuHandler);
 
-        binding.detailsLayout.post(() -> {
-            if (mMap != null) {
-                int bottomPadding = binding.detailsLayout.getHeight();
-                Log.i("AAA", "Bottom padding = " + bottomPadding);
-                mMap.setPadding(0, 0, 0, bottomPadding);
+        menuHandler.setOnClickListener(v -> {
+            if (sheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            } else {
+                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
 
+        bottomButton.setOnClickListener(b -> {
 
-        binding.testButton.setOnClickListener(v -> {
-            Log.i("AAA", "Cliccato");
-            Intent intent = new Intent(v.getContext(), SecondActivity.class);
-            startActivity(intent);
         });
+        sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
+
+//        binding.detailsLayout.post(() -> {
+//            if (mMap != null) {
+//                int bottomPadding = binding.detailsLayout.getHeight();
+//                Log.i("AAA", "Bottom padding = " + bottomPadding);
+//                mMap.setPadding(0, 0, 0, bottomPadding);
+//            }
+//        });
+//
+//
+//        binding.testButton.setOnClickListener(v -> {
+//            Log.i("AAA", "Cliccato");
+//            Intent intent = new Intent(v.getContext(), SecondActivity.class);
+//            startActivity(intent);
+//        });
     }
 
     /**
@@ -79,6 +112,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    @SuppressLint("PotentialBehaviorOverride")
+    // with mMap.setOnCameraIdleListener(clusterManager)
+    // click listener has to be set on the clusterManager itself
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;

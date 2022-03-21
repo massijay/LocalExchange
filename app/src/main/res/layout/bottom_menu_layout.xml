@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/bottomMenuLayout"
+    android:background="@drawable/top_rounded_corners"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="21dp">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/rounded_handler"
+        android:id="@+id/menuHandler"
+        android:layout_gravity="center"
+        android:paddingTop="7dp"
+        android:paddingBottom="2dp"
+        android:paddingHorizontal="5dp"
+        tools:ignore="ContentDescription" />
+
+    <Button
+        android:id="@+id/bottomButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="VAI BOTTOM SHEET" />
+
+</LinearLayout>
