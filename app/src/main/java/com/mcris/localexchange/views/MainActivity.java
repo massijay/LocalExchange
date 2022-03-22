@@ -9,7 +9,6 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,6 +16,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -33,11 +34,13 @@ import com.mcris.localexchange.R;
 import com.mcris.localexchange.databinding.ActivityMainBinding;
 import com.mcris.localexchange.models.CustomClusterRenderer;
 import com.mcris.localexchange.models.Item;
+import com.mcris.localexchange.models.ItemsAdapter;
 import com.mcris.localexchange.models.Record;
 import com.mcris.localexchange.models.Table;
 import com.mcris.localexchange.services.AirtableApiService;
 import com.mcris.localexchange.services.GsonRequest;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -45,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private ActivityMainBinding binding;
     private ClusterManager<Item> clusterManager;
+
+    private RecyclerView recyclerView;
+    private ItemsAdapter itemsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +60,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         LinearLayout bottomMenuLayout = findViewById(R.id.bottomMenuLayout);
         BottomSheetBehavior<LinearLayout> sheetBehavior = BottomSheetBehavior.from(bottomMenuLayout);
-        Button bottomButton = findViewById(R.id.bottomButton);
         ImageView menuHandler = findViewById(R.id.menuHandler);
+
+        recyclerView = findViewById(R.id.mainRecyclerView);
+        itemsAdapter = new ItemsAdapter(new ArrayList<Item>());
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(itemsAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         menuHandler.setOnClickListener(v -> {
             if (sheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
@@ -63,10 +74,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             } else {
                 sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
-        });
-
-        bottomButton.setOnClickListener(b -> {
-
         });
         sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -86,28 +93,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
-
-//        binding.detailsLayout.post(() -> {
-//            if (mMap != null) {
-//                int bottomPadding = binding.detailsLayout.getHeight();
-//                Log.i("AAA", "Bottom padding = " + bottomPadding);
-//                mMap.setPadding(0, 0, 0, bottomPadding);
-//            }
-//        });
-//
-//
-//        binding.testButton.setOnClickListener(v -> {
-//            Log.i("AAA", "Cliccato");
-//            Intent intent = new Intent(v.getContext(), SecondActivity.class);
-//            startActivity(intent);
-//        });
     }
 
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -129,9 +120,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraIdleListener(clusterManager);
         mMap.setOnMarkerClickListener(clusterManager);
 
-        // Add a marker in Sydney and move the camera
-//        LatLng units = new LatLng(45.6595, 13.7947);
-//        mMap.addMarker(new MarkerOptions().position(units).title("Marker in Trieste"));
         // HARDCODED current Coordinates
         LatLng casa = new LatLng(45.8727, 13.4792);
         mMap.moveCamera(CameraUpdateFactory.zoomTo(17.0001f));
@@ -143,21 +131,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         response -> {
                             for (Record<Item> record : response.getRecords()) {
                                 Item item = record.getRow();
-                                if (item.getPictureUrl() == null || item.getPictureUrl().isEmpty()) {
-                                    item.setMarkerBitmap(drawBitmapMarker(item, null));
+                                if (item.getThumbnailUrl() == null || item.getThumbnailUrl().isEmpty()) {
+//                                    item.setThumbnailBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.test_product));
+                                    item.setMarkerBitmap(drawBitmapMarker(item));
                                     clusterManager.addItem(item);
+                                    itemsAdapter.addItem(item);
                                     clusterManager.cluster();
                                 } else {
                                     FirebaseStorage storage = FirebaseStorage.getInstance();
 
                                     StorageReference imgRef = storage.getReferenceFromUrl(item.getThumbnailUrl());
 
-                                    final long FIVE_MEGABYTES = 5 * 1024 * 1024;
-                                    imgRef.getBytes(FIVE_MEGABYTES)
+                                    final long ONE_MEGABYTE = 1024 * 1024;
+                                    imgRef.getBytes(ONE_MEGABYTE)
                                             .addOnSuccessListener(bytes -> {
-                                                Bitmap pic = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                                item.setMarkerBitmap(drawBitmapMarker(item, pic));
+                                                item.setThumbnailBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                                                item.setMarkerBitmap(drawBitmapMarker(item));
                                                 clusterManager.addItem(item);
+                                                itemsAdapter.addItem(item);
                                                 clusterManager.cluster();
                                             })
                                             .addOnFailureListener(e -> {
@@ -181,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.i("AAA", "STOP MainActivity");
     }
 
-    public Bitmap drawBitmapMarker(Item item, Bitmap picture) {
+    public Bitmap drawBitmapMarker(Item item) {
         View markerLayout = getLayoutInflater().inflate(R.layout.custom_marker_layout, binding.getRoot(), false);
         ImageView imageView = markerLayout.findViewById(R.id.markerImageView);
         TextView mainTextView = markerLayout.findViewById(R.id.mainTextView);
@@ -190,11 +181,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mainTextView.setText(item.getName());
         priceTextView.setText(String.format(Locale.getDefault(), "%.0f€", item.getPrice()));
 
-        if (item.getPictureUrl() == null || item.getPictureUrl().isEmpty()) {
+        if (item.getThumbnailBitmap() == null) {
             imageView.setVisibility(View.GONE);
             return renderBitmap(markerLayout);
         }
-        imageView.setImageBitmap(picture);
+        imageView.setImageBitmap(item.getThumbnailBitmap());
         imageView.setContentDescription(item.getName());
 
 

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/rowImageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="5dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/test_product"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/rowPriceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="5dp"
+        android:maxLines="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rowImageView"
+        tools:text="200 €" />
+
+    <TextView
+        android:id="@+id/rowTitleTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="5dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/rowPriceTextView"
+        app:layout_constraintStart_toEndOf="@+id/rowImageView"
+        app:layout_constraintTop_toTopOf="@+id/rowPriceTextView"
+        tools:text="Title" />
+
+
+    <TextView
+        android:id="@+id/rowDescriptionTextView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:ellipsize="end"
+        app:layout_constraintBottom_toBottomOf="@+id/rowImageView"
+        app:layout_constraintEnd_toEndOf="@+id/rowPriceTextView"
+        app:layout_constraintStart_toStartOf="@+id/rowTitleTextView"
+        app:layout_constraintTop_toBottomOf="@+id/rowTitleTextView"
+        tools:text="Very very\nlong\ndescription\nof\nthis very beautiful item and i want text to go over the maximum space" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
