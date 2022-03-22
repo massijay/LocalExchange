@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ImageView menuHandler = findViewById(R.id.menuHandler);
 
         recyclerView = findViewById(R.id.mainRecyclerView);
-        itemsAdapter = new ItemsAdapter(new ArrayList<Item>());
+        itemsAdapter = new ItemsAdapter(new ArrayList<>());
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(itemsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 }
                             }
                         },
-                        error -> Toast.makeText(MainActivity.this, "ERRORE: " + error.getMessage(), Toast.LENGTH_LONG).show());
+                        error -> Toast.makeText(MainActivity.this, "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
         queue.add(itemTableRequest);
     }
 
@@ -183,26 +183,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (item.getThumbnailBitmap() == null) {
             imageView.setVisibility(View.GONE);
-            return renderBitmap(markerLayout);
+            return renderBitmapWithRoundedCorners(markerLayout);
         }
         imageView.setImageBitmap(item.getThumbnailBitmap());
         imageView.setContentDescription(item.getName());
 
 
-        return renderBitmap(markerLayout);
+        return renderBitmapWithRoundedCorners(markerLayout);
     }
 
     @NonNull
-    private Bitmap renderBitmap(View markerLayout) {
-        markerLayout.measure(
+    private static Bitmap renderBitmapWithRoundedCorners(View view) {
+        view.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
 
-        markerLayout.layout(0, 0, markerLayout.getMeasuredWidth(), markerLayout.getMeasuredHeight());
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
 
         Bitmap bitmap = Bitmap.createBitmap(
-                markerLayout.getMeasuredWidth(),
-                markerLayout.getMeasuredHeight(),
+                view.getMeasuredWidth(),
+                view.getMeasuredHeight(),
                 Bitmap.Config.ARGB_8888);
 
         Canvas canvas = new Canvas(bitmap);
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         clipPath.addRoundRect(rect, radius, radius, Path.Direction.CW);
         canvas.clipPath(clipPath);
 
-        markerLayout.draw(canvas);
+        view.draw(canvas);
         return bitmap;
     }
 }
