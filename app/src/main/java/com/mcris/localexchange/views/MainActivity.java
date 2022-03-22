@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 } else {
                                     FirebaseStorage storage = FirebaseStorage.getInstance();
 
-                                    StorageReference imgRef = storage.getReferenceFromUrl(item.getPictureUrl());
+                                    StorageReference imgRef = storage.getReferenceFromUrl(item.getThumbnailUrl());
 
                                     final long FIVE_MEGABYTES = 5 * 1024 * 1024;
                                     imgRef.getBytes(FIVE_MEGABYTES)

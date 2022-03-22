@@ -32,6 +32,9 @@ public class Item implements ClusterItem {
     @SerializedName("Picture")
     @Expose
     private String pictureUrl;
+    @SerializedName("Thumbnail")
+    @Expose
+    private String thumbnailUrl;
 
     private Bitmap markerBitmap;
 
@@ -93,6 +96,14 @@ public class Item implements ClusterItem {
 
     public void setPictureUrl(String pictureUrl) {
         this.pictureUrl = pictureUrl;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     @NonNull
