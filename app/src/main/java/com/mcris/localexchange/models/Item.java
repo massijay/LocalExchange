@@ -36,6 +36,8 @@ public class Item implements ClusterItem {
     @Expose
     private String thumbnailUrl;
 
+    private Bitmap thumbnailBitmap;
+
     private Bitmap markerBitmap;
 
     public String getName() {
@@ -130,5 +132,13 @@ public class Item implements ClusterItem {
 
     public void setMarkerBitmap(Bitmap markerBitmap) {
         this.markerBitmap = markerBitmap;
+    }
+
+    public Bitmap getThumbnailBitmap() {
+        return thumbnailBitmap;
+    }
+
+    public void setThumbnailBitmap(Bitmap thumbnailBitmap) {
+        this.thumbnailBitmap = thumbnailBitmap;
     }
 }
