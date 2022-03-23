@@ -12,13 +12,15 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.mcris.localexchange.models.entities.Item;
 
 public class CustomClusterRenderer<T extends Item> extends DefaultClusterRenderer<T> {
+    private final ItemMarkerGenerator markerGenerator;
+
     public CustomClusterRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
         super(context, map, clusterManager);
+        markerGenerator = new ItemMarkerGenerator(context);
     }
 
     @Override
     protected void onBeforeClusterItemRendered(@NonNull T item, @NonNull MarkerOptions markerOptions) {
-//        super.onBeforeClusterItemRendered(item, markerOptions);
-        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(item.getMarkerBitmap()));
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerGenerator.drawMarker(item)));
     }
 }

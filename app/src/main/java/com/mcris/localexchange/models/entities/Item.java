@@ -38,8 +38,6 @@ public class Item implements ClusterItem {
 
     private Bitmap thumbnailBitmap;
 
-    private Bitmap markerBitmap;
-
     public String getName() {
         return name;
     }
@@ -124,14 +122,6 @@ public class Item implements ClusterItem {
     @Override
     public String getSnippet() {
         return description;
-    }
-
-    public Bitmap getMarkerBitmap() {
-        return markerBitmap;
-    }
-
-    public void setMarkerBitmap(Bitmap markerBitmap) {
-        this.markerBitmap = markerBitmap;
     }
 
     public Bitmap getThumbnailBitmap() {

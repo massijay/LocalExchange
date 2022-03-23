@@ -1,17 +1,12 @@
 package com.mcris.localexchange.views;
 
 import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Path;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,7 +36,6 @@ import com.mcris.localexchange.services.AirtableApiService;
 import com.mcris.localexchange.services.GsonRequest;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -133,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 Item item = record.getRow();
                                 if (item.getThumbnailUrl() == null || item.getThumbnailUrl().isEmpty()) {
 //                                    item.setThumbnailBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.test_product));
-                                    item.setMarkerBitmap(drawBitmapMarker(item));
                                     clusterManager.addItem(item);
                                     itemsAdapter.addItem(item);
                                     clusterManager.cluster();
@@ -146,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     imgRef.getBytes(ONE_MEGABYTE)
                                             .addOnSuccessListener(bytes -> {
                                                 item.setThumbnailBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                                                item.setMarkerBitmap(drawBitmapMarker(item));
                                                 clusterManager.addItem(item);
                                                 itemsAdapter.addItem(item);
                                                 clusterManager.cluster();
@@ -170,50 +162,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onStop() {
         super.onStop();
         Log.i("AAA", "STOP MainActivity");
-    }
-
-    public Bitmap drawBitmapMarker(Item item) {
-        View markerLayout = getLayoutInflater().inflate(R.layout.custom_marker_layout, binding.getRoot(), false);
-        ImageView imageView = markerLayout.findViewById(R.id.markerImageView);
-        TextView mainTextView = markerLayout.findViewById(R.id.mainTextView);
-        TextView priceTextView = markerLayout.findViewById(R.id.priceTextView);
-
-        mainTextView.setText(item.getName());
-        priceTextView.setText(String.format(Locale.getDefault(), "%.0f€", item.getPrice()));
-
-        if (item.getThumbnailBitmap() == null) {
-            imageView.setVisibility(View.GONE);
-            return renderBitmapWithRoundedCorners(markerLayout);
-        }
-        imageView.setImageBitmap(item.getThumbnailBitmap());
-        imageView.setContentDescription(item.getName());
-
-
-        return renderBitmapWithRoundedCorners(markerLayout);
-    }
-
-    @NonNull
-    private static Bitmap renderBitmapWithRoundedCorners(View view) {
-        view.measure(
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-
-        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
-
-        Bitmap bitmap = Bitmap.createBitmap(
-                view.getMeasuredWidth(),
-                view.getMeasuredHeight(),
-                Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmap);
-
-        float radius = 15f;
-        Path clipPath = new Path();
-        RectF rect = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        clipPath.addRoundRect(rect, radius, radius, Path.Direction.CW);
-        canvas.clipPath(clipPath);
-
-        view.draw(canvas);
-        return bitmap;
     }
 }
