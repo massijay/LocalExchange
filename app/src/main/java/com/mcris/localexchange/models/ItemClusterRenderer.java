@@ -11,10 +11,10 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.mcris.localexchange.models.entities.Item;
 
-public class CustomClusterRenderer<T extends Item> extends DefaultClusterRenderer<T> {
+public class ItemClusterRenderer<T extends Item> extends DefaultClusterRenderer<T> {
     private final ItemMarkerGenerator markerGenerator;
 
-    public CustomClusterRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
+    public ItemClusterRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
         super(context, map, clusterManager);
         markerGenerator = new ItemMarkerGenerator(context);
     }

@@ -27,7 +27,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.maps.android.clustering.ClusterManager;
 import com.mcris.localexchange.R;
 import com.mcris.localexchange.databinding.ActivityMainBinding;
-import com.mcris.localexchange.models.CustomClusterRenderer;
+import com.mcris.localexchange.models.ItemClusterRenderer;
 import com.mcris.localexchange.models.ItemsAdapter;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.models.entities.Record;
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
         clusterManager = new ClusterManager<>(this, mMap);
-        clusterManager.setRenderer(new CustomClusterRenderer<>(this, mMap, clusterManager));
+        clusterManager.setRenderer(new ItemClusterRenderer<>(this, mMap, clusterManager));
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
