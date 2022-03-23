@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.UiContext;
+
 import com.mcris.localexchange.R;
 import com.mcris.localexchange.models.entities.Item;
 
@@ -19,7 +21,7 @@ import java.util.Locale;
 public class ItemMarkerGenerator {
     private final Context context;
 
-    public ItemMarkerGenerator(Context context) {
+    public ItemMarkerGenerator(@UiContext Context context) {
         this.context = context;
     }
 

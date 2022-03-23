@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
         clusterManager = new ClusterManager<>(this, mMap);
-        clusterManager.setRenderer(new ItemClusterRenderer<>(this, mMap, clusterManager));
+        clusterManager.setRenderer(new ItemClusterRenderer(this, mMap, clusterManager));
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
