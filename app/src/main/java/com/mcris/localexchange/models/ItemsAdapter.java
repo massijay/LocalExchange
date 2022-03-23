@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mcris.localexchange.R;
+import com.mcris.localexchange.models.entities.Item;
 
 import java.util.ArrayList;
 import java.util.List;

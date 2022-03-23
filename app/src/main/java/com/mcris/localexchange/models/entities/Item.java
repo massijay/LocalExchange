@@ -1,4 +1,4 @@
-package com.mcris.localexchange.models;
+package com.mcris.localexchange.models.entities;
 
 import android.graphics.Bitmap;
 

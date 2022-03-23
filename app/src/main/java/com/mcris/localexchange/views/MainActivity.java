@@ -33,10 +33,10 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.mcris.localexchange.R;
 import com.mcris.localexchange.databinding.ActivityMainBinding;
 import com.mcris.localexchange.models.CustomClusterRenderer;
-import com.mcris.localexchange.models.Item;
 import com.mcris.localexchange.models.ItemsAdapter;
-import com.mcris.localexchange.models.Record;
-import com.mcris.localexchange.models.Table;
+import com.mcris.localexchange.models.entities.Item;
+import com.mcris.localexchange.models.entities.Record;
+import com.mcris.localexchange.models.entities.Table;
 import com.mcris.localexchange.services.AirtableApiService;
 import com.mcris.localexchange.services.GsonRequest;
 

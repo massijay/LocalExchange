@@ -7,8 +7,8 @@ import android.content.Context;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.google.gson.reflect.TypeToken;
-import com.mcris.localexchange.models.Item;
-import com.mcris.localexchange.models.Table;
+import com.mcris.localexchange.models.entities.Item;
+import com.mcris.localexchange.models.entities.Table;
 
 import java.util.HashMap;
 
