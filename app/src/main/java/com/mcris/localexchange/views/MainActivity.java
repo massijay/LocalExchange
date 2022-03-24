@@ -1,41 +1,34 @@
 package com.mcris.localexchange.views;
 
 import android.annotation.SuppressLint;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.ObservableMap;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.google.maps.android.clustering.ClusterManager;
 import com.mcris.localexchange.R;
 import com.mcris.localexchange.databinding.ActivityMainBinding;
 import com.mcris.localexchange.models.ItemClusterRenderer;
 import com.mcris.localexchange.models.ItemsAdapter;
 import com.mcris.localexchange.models.entities.Item;
-import com.mcris.localexchange.models.entities.Record;
-import com.mcris.localexchange.models.entities.Table;
-import com.mcris.localexchange.services.AirtableApiService;
-import com.mcris.localexchange.services.GsonRequest;
+import com.mcris.localexchange.viewmodels.MainViewModel;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -45,19 +38,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private RecyclerView recyclerView;
     private ItemsAdapter itemsAdapter;
+    private MainViewModel mainViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         LinearLayout bottomMenuLayout = findViewById(R.id.bottomMenuLayout);
         BottomSheetBehavior<LinearLayout> sheetBehavior = BottomSheetBehavior.from(bottomMenuLayout);
         ImageView menuHandler = findViewById(R.id.menuHandler);
 
         recyclerView = findViewById(R.id.mainRecyclerView);
-        itemsAdapter = new ItemsAdapter(new ArrayList<>());
+        itemsAdapter = new ItemsAdapter();
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(itemsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -119,37 +114,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.zoomTo(17.0001f));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(casa));
 
-        RequestQueue queue = Volley.newRequestQueue(this);
-        GsonRequest<Table<Item>> itemTableRequest = AirtableApiService.getInstance(this)
-                .requestItemTable(
-                        response -> {
-                            for (Record<Item> record : response.getRecords()) {
-                                Item item = record.getRow();
-                                if (item.getThumbnailUrl() == null || item.getThumbnailUrl().isEmpty()) {
-//                                    item.setThumbnailBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.test_product));
-                                    clusterManager.addItem(item);
-                                    itemsAdapter.addItem(item);
-                                    clusterManager.cluster();
-                                } else {
-                                    FirebaseStorage storage = FirebaseStorage.getInstance();
+        itemsAdapter.setReferencePosition(casa);
+        addItemsToMapAndList(mainViewModel.getObservableItems().values());
 
-                                    StorageReference imgRef = storage.getReferenceFromUrl(item.getThumbnailUrl());
+        mainViewModel.getObservableItems().addOnMapChangedCallback(
+                new ObservableMap.OnMapChangedCallback<ObservableMap<String, Item>, String, Item>() {
+                    @Override
+                    public void onMapChanged(ObservableMap<String, Item> sender, String key) {
+                        addItemToMapAndList(sender.get(key));
+                    }
+                });
 
-                                    final long ONE_MEGABYTE = 1024 * 1024;
-                                    imgRef.getBytes(ONE_MEGABYTE)
-                                            .addOnSuccessListener(bytes -> {
-                                                item.setThumbnailBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                                                clusterManager.addItem(item);
-                                                itemsAdapter.addItem(item);
-                                                clusterManager.cluster();
-                                            })
-                                            .addOnFailureListener(e -> {
-                                            });
-                                }
-                            }
-                        },
-                        error -> Toast.makeText(MainActivity.this, "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
-        queue.add(itemTableRequest);
+        mainViewModel.obtainItems();
+    }
+
+    private void addItemToMapAndList(Item item) {
+        clusterManager.addItem(item);
+        itemsAdapter.addItem(item);
+        clusterManager.cluster();
+    }
+
+    private void addItemsToMapAndList(Collection<Item> items) {
+        clusterManager.addItems(items);
+        itemsAdapter.addItems(items);
+        clusterManager.cluster();
     }
 
     @Override
