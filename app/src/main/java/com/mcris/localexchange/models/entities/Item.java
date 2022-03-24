@@ -10,6 +10,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.maps.android.clustering.ClusterItem;
 
+import java.util.Objects;
+
 public class Item implements ClusterItem {
     @SerializedName("Name")
     @Expose
@@ -130,5 +132,18 @@ public class Item implements ClusterItem {
 
     public void setThumbnailBitmap(Bitmap thumbnailBitmap) {
         this.thumbnailBitmap = thumbnailBitmap;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Item)) return false;
+        Item item = (Item) o;
+        return Objects.equals(id, item.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
