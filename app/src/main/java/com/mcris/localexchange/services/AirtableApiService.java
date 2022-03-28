@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.models.entities.Table;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 
 public class AirtableApiService {
@@ -49,7 +50,6 @@ public class AirtableApiService {
             "&fields%5B%5D=Picture" +
             "&fields%5B%5D=Thumbnail";
 
-
     public GsonRequest<Table<Item>> requestItemTable(Response.Listener<Table<Item>> listener, Response.ErrorListener errorListener) {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + API_KEY);
@@ -60,4 +60,21 @@ public class AirtableApiService {
                 listener, errorListener);
     }
 
+    public GsonRequest<Table<Item>> requestItemTable(double minLatitude, double maxLatitude,
+                                                     double minLongitude, double maxLongitude,
+                                                     Response.Listener<Table<Item>> listener,
+                                                     Response.ErrorListener errorListener) {
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + API_KEY);
+
+        //Url formatted: &filterByFormula=AND(AND(Latitude >= {0}, Latitude <= {1}), AND(Longitude >= {2}, Longitude <= {3}))
+        String formula = MessageFormat.format("&filterByFormula=AND%28AND%28Latitude%20%3E%3D%20{0}%2C%20Latitude%20%3C%3D%20{1}%29%2C%20AND%28Longitude%20%3E%3D%20{2}%2C%20Longitude%20%3C%3D%20{3}%29%29",
+                minLatitude, maxLatitude, minLongitude, maxLongitude);
+
+        return new GsonRequest<>(
+                Request.Method.GET, itemsBaseQuery + formula, headers,
+                new TypeToken<Table<Item>>() {
+                }.getType(),
+                listener, errorListener);
+    }
 }

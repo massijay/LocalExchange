@@ -19,6 +19,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.maps.android.clustering.ClusterManager;
 import com.mcris.localexchange.R;
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      * installed Google Play services and returned to the app.
      */
     @SuppressLint("PotentialBehaviorOverride")
-    // with mMap.setOnCameraIdleListener(clusterManager)
+    // that can occur with mMap.setOnMarkerClickListener(clusterManager)
     // click listener has to be set on the clusterManager itself
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -101,7 +102,40 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        clusterManager = new ClusterManager<>(this, mMap);
+        clusterManager = new ClusterManager<Item>(this, mMap) {
+            @Override
+            public void onCameraIdle() {
+                super.onCameraIdle();
+                // latLngBounds contain the north-east and south-west coordinates
+                // of the rectangle just outside of the screen
+                // i.e. the screen vertices are on the sides of the map rectangle
+                LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+                // Tests
+//                LatLng farLeft = region.farLeft;
+//                LatLng nearLeft = region.nearLeft;
+//                LatLng farRight = region.farRight;
+//                LatLng nearRight = region.nearRight;
+//
+//                double maxLat = Math.max(farLeft.latitude, Math.max(nearLeft.latitude, Math.max(farRight.latitude, nearRight.latitude)));
+//                double minLat = Math.min(farLeft.latitude, Math.min(nearLeft.latitude, Math.min(farRight.latitude, nearRight.latitude)));
+//                double maxLong = Math.max(farLeft.longitude, Math.max(nearLeft.longitude, Math.max(farRight.longitude, nearRight.longitude)));
+//                double minLong = Math.min(farLeft.longitude, Math.min(nearLeft.longitude, Math.min(farRight.longitude, nearRight.longitude)));
+//
+//                if (bounds.northeast.latitude == maxLat &&
+//                        bounds.northeast.longitude == maxLong &&
+//                        bounds.southwest.latitude == minLat &&
+//                        bounds.southwest.longitude == minLong) {
+//                    Log.i("WUT", bounds.toString());
+//                } else {
+//                    Log.e("WUT", bounds.toString());
+//                }
+                double minLatitude = bounds.southwest.latitude;
+                double minLongitude = bounds.southwest.longitude;
+                double maxLatitude = bounds.northeast.latitude;
+                double maxLongitude = bounds.northeast.longitude;
+                mainViewModel.obtainItems(minLatitude, maxLatitude, minLongitude, maxLongitude);
+            }
+        };
         clusterManager.setRenderer(new ItemClusterRenderer(this, mMap, clusterManager));
 
         // Point the map's listeners at the listeners implemented by the cluster
@@ -125,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 });
 
-        mainViewModel.obtainItems();
+//        mainViewModel.obtainItems();
     }
 
     private void addItemToMapAndList(Item item) {

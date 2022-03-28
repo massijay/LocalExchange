@@ -33,10 +33,11 @@ public class MainViewModel extends AndroidViewModel {
         observableItems = new ObservableArrayMap<>();
     }
 
-    public void obtainItems() {
+    public void obtainItems(double minLatitude, double maxLatitude,
+                            double minLongitude, double maxLongitude) {
         RequestQueue queue = Volley.newRequestQueue(getApplication());
         GsonRequest<Table<Item>> itemTableRequest = AirtableApiService.getInstance(getApplication())
-                .requestItemTable(
+                .requestItemTable(minLatitude, maxLatitude, minLongitude, maxLongitude,
                         response -> {
                             for (Record<Item> record : response.getRecords()) {
                                 Item item = record.getRow();
