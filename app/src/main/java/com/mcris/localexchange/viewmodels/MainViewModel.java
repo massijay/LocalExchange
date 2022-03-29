@@ -41,7 +41,7 @@ public class MainViewModel extends AndroidViewModel {
                         response -> {
                             for (Record<Item> record : response.getRecords()) {
                                 Item item = record.getRow();
-                                if (!observableItems.containsKey(item.getName())) {
+                                if (!observableItems.containsKey(item.getId())) {
                                     if (item.getThumbnailUrl() == null || item.getThumbnailUrl().isEmpty()) {
 //                                    item.setThumbnailBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.test_product));
                                         observableItems.putIfAbsent(item.getId(), item);
