@@ -17,12 +17,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.maps.android.clustering.ClusterManager;
 import com.mcris.localexchange.R;
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private RecyclerView recyclerView;
     private ItemsAdapter itemsAdapter;
     private MainViewModel mainViewModel;
+
+    private FusedLocationProviderClient fusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +86,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             }
         });
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        @SuppressLint("MissingPermission") // This code checks the granted permissions already
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
                                 .RequestMultiplePermissions(), result -> {
@@ -90,6 +98,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             boolean coarseLocationGranted = getOrDefault(result, Manifest.permission.ACCESS_COARSE_LOCATION, false);
                             if (fineLocationGranted || coarseLocationGranted) {
                                 Log.d("AAA", "LOCAZIONE CONCESSA");
+                                CancellationTokenSource cts = new CancellationTokenSource();
+
+                                // Get the last known location
+//                                fusedLocationClient.getLastLocation()
+//                                        .addOnSuccessListener(this, location -> {
+//                                            // Got last known location. In some rare situations this can be null.
+//                                            if (location != null) {
+//                                                mainViewModel.getUserLocation().setValue(new LatLng(location.getLatitude(), location.getLongitude()));
+//                                            }
+//                                        });
+
+                                fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, cts.getToken())
+                                        .addOnSuccessListener(location -> {
+                                            // Got last known location. In some rare situations this can be null.
+                                            if (location != null) {
+                                                mainViewModel.getUserLocation().setValue(new LatLng(location.getLatitude(), location.getLongitude()));
+                                            }
+                                        });
 
                                 // Obtain the SupportMapFragment and get notified when the map is ready to be used.
                                 SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -149,12 +175,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraIdleListener(clusterManager);
         mMap.setOnMarkerClickListener(clusterManager);
 
-        // HARDCODED current Coordinates
-        LatLng casa = new LatLng(45.8727, 13.4792);
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(17.0001f));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(casa));
+        mainViewModel.getUserLocation().observe(this, latLng -> setCurrentLocation(latLng));
 
-        itemsAdapter.setReferencePosition(casa);
+        setCurrentLocation(mainViewModel.getUserLocation().getValue());
+
         addItemsToMapAndList(mainViewModel.getObservableItems().values());
 
         mainViewModel.getObservableItems().addOnMapChangedCallback(
@@ -164,6 +188,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         addItemToMapAndList(sender.get(key));
                     }
                 });
+    }
+
+    private void setCurrentLocation(LatLng latLng) {
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(17f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        itemsAdapter.setReferencePosition(latLng);
     }
 
     private void addItemToMapAndList(Item item) {

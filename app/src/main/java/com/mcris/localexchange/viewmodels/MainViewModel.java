@@ -9,9 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableArrayMap;
 import androidx.databinding.ObservableMap;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MutableLiveData;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mcris.localexchange.models.entities.Item;
@@ -22,10 +24,19 @@ import com.mcris.localexchange.services.GsonRequest;
 
 public class MainViewModel extends AndroidViewModel {
 
-    public ObservableArrayMap<String, Item> observableItems;
+    private final ObservableArrayMap<String, Item> observableItems;
+
+    private MutableLiveData<LatLng> userLocation;
 
     public ObservableMap<String, Item> getObservableItems() {
         return observableItems;
+    }
+
+    public MutableLiveData<LatLng> getUserLocation() {
+        if (userLocation == null) {
+            userLocation = new MutableLiveData<>(new LatLng(0, 0));
+        }
+        return userLocation;
     }
 
     public MainViewModel(@NonNull Application application) {
