@@ -1,5 +1,6 @@
 package com.mcris.localexchange.views;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +8,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.ObservableMap;
@@ -30,6 +33,7 @@ import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.viewmodels.MainViewModel;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -77,12 +81,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
+        ActivityResultLauncher<String[]> locationPermissionRequest =
+                registerForActivityResult(new ActivityResultContracts
+                                .RequestMultiplePermissions(), result -> {
+                            // Map.getOrDefault() requires Android API 24
+                            // Boolean fineLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
+                            boolean fineLocationGranted = getOrDefault(result, Manifest.permission.ACCESS_FINE_LOCATION, false);
+                            boolean coarseLocationGranted = getOrDefault(result, Manifest.permission.ACCESS_COARSE_LOCATION, false);
+                            if (fineLocationGranted || coarseLocationGranted) {
+                                Log.d("AAA", "LOCAZIONE CONCESSA");
+
+                                // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+                                SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                                        .findFragmentById(R.id.map);
+                                if (mapFragment != null) {
+                                    mapFragment.getMapAsync(this);
+                                }
+                            } else {
+                                Log.d("AAA", "NESSUNA LOCAZIONE CONCESSA");
+                            }
+                        }
+                );
+
+        locationPermissionRequest.launch(new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        });
     }
 
     /**
@@ -164,5 +188,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onStop() {
         super.onStop();
         Log.i("AAA", "STOP MainActivity");
+    }
+
+    private <K, V> V getOrDefault(Map<K, V> map, K key, V defaultValue) {
+        V v;
+        return (((v = map.get(key)) != null) || map.containsKey(key))
+                ? v
+                : defaultValue;
     }
 }
