@@ -10,8 +10,8 @@ import com.google.gson.reflect.TypeToken;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.models.entities.Table;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class AirtableApiService {
     // It's safe (not a memory leak) to save context in a static field as long it is
@@ -67,9 +67,10 @@ public class AirtableApiService {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + API_KEY);
 
-        //Url formatted: &filterByFormula=AND(AND(Latitude >= {0}, Latitude <= {1}), AND(Longitude >= {2}, Longitude <= {3}))
-        String formula = MessageFormat.format("&filterByFormula=AND%28AND%28Latitude%20%3E%3D%20{0}%2C%20Latitude%20%3C%3D%20{1}%29%2C%20AND%28Longitude%20%3E%3D%20{2}%2C%20Longitude%20%3C%3D%20{3}%29%29",
-                minLatitude, maxLatitude, minLongitude, maxLongitude);
+        // Url formatted and % escaped:
+        // &filterByFormula=AND(AND(Latitude >= %f, Latitude <= %f), AND(Longitude >= %f, Longitude <= %f))
+        String pattern = "&filterByFormula=AND%%28AND%%28Latitude%%20%%3E%%3D%%20%f%%2C%%20Latitude%%20%%3C%%3D%%20%f%%29%%2C%%20AND%%28Longitude%%20%%3E%%3D%%20%f%%2C%%20Longitude%%20%%3C%%3D%%20%f%%29%%29";
+        String formula = String.format(Locale.US, pattern, minLatitude, maxLatitude, minLongitude, maxLongitude);
 
         return new GsonRequest<>(
                 Request.Method.GET, itemsBaseQuery + formula, headers,
