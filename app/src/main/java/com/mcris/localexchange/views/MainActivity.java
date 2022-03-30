@@ -110,25 +110,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // of the rectangle just outside of the screen
                 // i.e. the screen vertices are on the sides of the map rectangle
                 LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-                // Tests
-//                LatLng farLeft = region.farLeft;
-//                LatLng nearLeft = region.nearLeft;
-//                LatLng farRight = region.farRight;
-//                LatLng nearRight = region.nearRight;
-//
-//                double maxLat = Math.max(farLeft.latitude, Math.max(nearLeft.latitude, Math.max(farRight.latitude, nearRight.latitude)));
-//                double minLat = Math.min(farLeft.latitude, Math.min(nearLeft.latitude, Math.min(farRight.latitude, nearRight.latitude)));
-//                double maxLong = Math.max(farLeft.longitude, Math.max(nearLeft.longitude, Math.max(farRight.longitude, nearRight.longitude)));
-//                double minLong = Math.min(farLeft.longitude, Math.min(nearLeft.longitude, Math.min(farRight.longitude, nearRight.longitude)));
-//
-//                if (bounds.northeast.latitude == maxLat &&
-//                        bounds.northeast.longitude == maxLong &&
-//                        bounds.southwest.latitude == minLat &&
-//                        bounds.southwest.longitude == minLong) {
-//                    Log.i("WUT", bounds.toString());
-//                } else {
-//                    Log.e("WUT", bounds.toString());
-//                }
+
                 double minLatitude = bounds.southwest.latitude;
                 double minLongitude = bounds.southwest.longitude;
                 double maxLatitude = bounds.northeast.latitude;
@@ -158,8 +140,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         addItemToMapAndList(sender.get(key));
                     }
                 });
-
-//        mainViewModel.obtainItems();
     }
 
     private void addItemToMapAndList(Item item) {
