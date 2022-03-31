@@ -114,6 +114,10 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
         sortedItems.endBatchedUpdates();
     }
 
+    public void clearItems() {
+        sortedItems.clear();
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageView;
