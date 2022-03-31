@@ -28,6 +28,8 @@ public class MainViewModel extends AndroidViewModel {
 
     private MutableLiveData<LatLng> userLocation;
 
+    private Item.Typology typeOfSearch;
+
     public ObservableMap<String, Item> getObservableItems() {
         return observableItems;
     }
@@ -39,16 +41,25 @@ public class MainViewModel extends AndroidViewModel {
         return userLocation;
     }
 
+    public Item.Typology getTypeOfSearch() {
+        return typeOfSearch;
+    }
+
+    public void setTypeOfSearch(Item.Typology typeOfSearch) {
+        this.typeOfSearch = typeOfSearch;
+    }
+
     public MainViewModel(@NonNull Application application) {
         super(application);
         observableItems = new ObservableArrayMap<>();
+        typeOfSearch = Item.Typology.SELL;
     }
 
     public void obtainItems(double minLatitude, double maxLatitude,
                             double minLongitude, double maxLongitude) {
         RequestQueue queue = Volley.newRequestQueue(getApplication());
         GsonRequest<Table<Item>> itemTableRequest = AirtableApiService.getInstance(getApplication())
-                .requestItemTable(minLatitude, maxLatitude, minLongitude, maxLongitude,
+                .requestItemTable(minLatitude, maxLatitude, minLongitude, maxLongitude, typeOfSearch,
                         response -> {
                             for (Record<Item> record : response.getRecords()) {
                                 Item item = record.getRow();

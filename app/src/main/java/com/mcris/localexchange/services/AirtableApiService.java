@@ -11,7 +11,6 @@ import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.models.entities.Table;
 
 import java.util.HashMap;
-import java.util.Locale;
 
 public class AirtableApiService {
     // It's safe (not a memory leak) to save context in a static field as long it is
@@ -48,7 +47,8 @@ public class AirtableApiService {
             "&fields%5B%5D=Longitude" +
             "&fields%5B%5D=Price" +
             "&fields%5B%5D=Picture" +
-            "&fields%5B%5D=Thumbnail";
+            "&fields%5B%5D=Thumbnail" +
+            "&fields%5B%5D=Type";
 
     public GsonRequest<Table<Item>> requestItemTable(Response.Listener<Table<Item>> listener, Response.ErrorListener errorListener) {
         HashMap<String, String> headers = new HashMap<>();
@@ -62,15 +62,20 @@ public class AirtableApiService {
 
     public GsonRequest<Table<Item>> requestItemTable(double minLatitude, double maxLatitude,
                                                      double minLongitude, double maxLongitude,
+                                                     Item.Typology type,
                                                      Response.Listener<Table<Item>> listener,
                                                      Response.ErrorListener errorListener) {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + API_KEY);
 
-        // Url formatted and % escaped:
-        // &filterByFormula=AND(AND(Latitude >= %f, Latitude <= %f), AND(Longitude >= %f, Longitude <= %f))
-        String pattern = "&filterByFormula=AND%%28AND%%28Latitude%%20%%3E%%3D%%20%f%%2C%%20Latitude%%20%%3C%%3D%%20%f%%29%%2C%%20AND%%28Longitude%%20%%3E%%3D%%20%f%%2C%%20Longitude%%20%%3C%%3D%%20%f%%29%%29";
-        String formula = String.format(Locale.US, pattern, minLatitude, maxLatitude, minLongitude, maxLongitude);
+        String formula = "&filterByFormula=" +
+                "AND%28" +                                                      // AND(
+                "Latitude%3E%3D" + minLatitude +                                // Latitude>=minLatitude
+                "%2C" + "Latitude%3C%3D" + maxLatitude +                        // ,Latitude<=maxLatitude
+                "%2C" + "Longitude%3E%3D" + minLongitude +                      // ,Longitude>=minLongitude
+                "%2C" + "Longitude%3C%3D" + maxLongitude +                      // ,Longitude<=maxLongitude
+                (type != null ? "%2C" + "Type%3D%22" + type + "%22" : "") +     // ,Type="type"
+                "%29";                                                          // )
 
         return new GsonRequest<>(
                 Request.Method.GET, itemsBaseQuery + formula, headers,

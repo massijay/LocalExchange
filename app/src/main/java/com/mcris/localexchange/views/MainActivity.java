@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ActivityMainBinding binding;
     private ClusterManager<Item> clusterManager;
 
+    private BottomSheetBehavior<LinearLayout> sheetBehavior;
     private RecyclerView recyclerView;
     private ItemsAdapter itemsAdapter;
     private MainViewModel mainViewModel;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
         LinearLayout bottomMenuLayout = findViewById(R.id.bottomMenuLayout);
-        BottomSheetBehavior<LinearLayout> sheetBehavior = BottomSheetBehavior.from(bottomMenuLayout);
+        sheetBehavior = BottomSheetBehavior.from(bottomMenuLayout);
         ImageView menuHandler = findViewById(R.id.menuHandler);
 
         recyclerView = findViewById(R.id.mainRecyclerView);
@@ -149,6 +150,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setPadding(0, binding.typologyToggleGroup.getHeight(), 0, sheetBehavior.getPeekHeight());
+
+        binding.supplyToggleButton.addOnCheckedChangeListener((button, isChecked) -> {
+            if (isChecked) {
+                mainViewModel.setTypeOfSearch(Item.Typology.SELL);
+                clearItems();
+                obtainItems();
+            }
+        });
+        binding.demandToggleButton.addOnCheckedChangeListener((button, isChecked) -> {
+            if (isChecked) {
+                mainViewModel.setTypeOfSearch(Item.Typology.BUY);
+                clearItems();
+                obtainItems();
+            }
+        });
 
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
@@ -156,16 +173,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onCameraIdle() {
                 super.onCameraIdle();
-                // latLngBounds contain the north-east and south-west coordinates
-                // of the rectangle just outside of the screen
-                // i.e. the screen vertices are on the sides of the map rectangle
-                LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-
-                double minLatitude = bounds.southwest.latitude;
-                double minLongitude = bounds.southwest.longitude;
-                double maxLatitude = bounds.northeast.latitude;
-                double maxLongitude = bounds.northeast.longitude;
-                mainViewModel.obtainItems(minLatitude, maxLatitude, minLongitude, maxLongitude);
+                obtainItems();
             }
         };
         clusterManager.setRenderer(new ItemClusterRenderer(this, mMap, clusterManager));
@@ -185,9 +193,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 new ObservableMap.OnMapChangedCallback<ObservableMap<String, Item>, String, Item>() {
                     @Override
                     public void onMapChanged(ObservableMap<String, Item> sender, String key) {
-                        addItemToMapAndList(sender.get(key));
+                        if (key != null) addItemToMapAndList(sender.get(key));
                     }
                 });
+    }
+
+    private void obtainItems() {
+        // latLngBounds contain the north-east and south-west coordinates
+        // of the rectangle just outside of the screen
+        // i.e. the screen vertices are on the sides of the map rectangle
+        LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+
+        double minLatitude = bounds.southwest.latitude;
+        double minLongitude = bounds.southwest.longitude;
+        double maxLatitude = bounds.northeast.latitude;
+        double maxLongitude = bounds.northeast.longitude;
+        mainViewModel.obtainItems(minLatitude, maxLatitude, minLongitude, maxLongitude);
     }
 
     private void setCurrentLocation(LatLng latLng) {
@@ -205,6 +226,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void addItemsToMapAndList(Collection<Item> items) {
         clusterManager.addItems(items);
         itemsAdapter.addItems(items);
+        clusterManager.cluster();
+    }
+
+    private void clearItems() {
+        mainViewModel.getObservableItems().clear();
+        clusterManager.clearItems();
+        itemsAdapter.clearItems();
         clusterManager.cluster();
     }
 

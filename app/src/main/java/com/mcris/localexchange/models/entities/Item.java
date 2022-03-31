@@ -38,6 +38,10 @@ public class Item implements ClusterItem {
     @Expose
     private String thumbnailUrl;
 
+    @SerializedName("Type")
+    @Expose
+    private Typology typology;
+
     private Bitmap thumbnailBitmap;
 
     public String getName() {
@@ -108,6 +112,14 @@ public class Item implements ClusterItem {
         this.thumbnailUrl = thumbnailUrl;
     }
 
+    public Typology getTypology() {
+        return typology;
+    }
+
+    public void setTypology(Typology typology) {
+        this.typology = typology;
+    }
+
     @NonNull
     @Override
     public LatLng getPosition() {
@@ -145,5 +157,23 @@ public class Item implements ClusterItem {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public enum Typology {
+        @SerializedName("buy")
+        BUY("buy"),
+        @SerializedName("sell")
+        SELL("sell");
+
+        private final String typologyString;
+
+        Typology(String typologyString) {
+            this.typologyString = typologyString;
+        }
+
+        @Override
+        public String toString() {
+            return typologyString;
+        }
     }
 }
