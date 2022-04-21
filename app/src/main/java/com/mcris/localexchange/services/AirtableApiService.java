@@ -36,6 +36,7 @@ public class AirtableApiService {
         return instance;
     }
 
+    // TODO: Remove hardcoded API KEY (?)
     private final String API_KEY = "keyKTETfgRQ5SHHLK";
     private final String apiUrl = "https://api.airtable.com/v0/";
     private final String baseId = "appT9OoAOwKHPXfYX";
