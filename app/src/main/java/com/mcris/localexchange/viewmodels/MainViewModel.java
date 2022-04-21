@@ -16,19 +16,26 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.mcris.localexchange.models.entities.Category;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.models.entities.Record;
 import com.mcris.localexchange.models.entities.Table;
 import com.mcris.localexchange.services.AirtableApiService;
 import com.mcris.localexchange.services.GsonRequest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainViewModel extends AndroidViewModel {
 
     private final ObservableArrayMap<String, Item> observableItems;
+    private List<Category> categories;
 
     private MutableLiveData<LatLng> userLocation;
 
     private Item.Typology typeOfSearch;
+
+    private String categoryId;
 
     public ObservableMap<String, Item> getObservableItems() {
         return observableItems;
@@ -49,6 +56,14 @@ public class MainViewModel extends AndroidViewModel {
         this.typeOfSearch = typeOfSearch;
     }
 
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+
     public MainViewModel(@NonNull Application application) {
         super(application);
         observableItems = new ObservableArrayMap<>();
@@ -59,7 +74,7 @@ public class MainViewModel extends AndroidViewModel {
                             double minLongitude, double maxLongitude) {
         RequestQueue queue = Volley.newRequestQueue(getApplication());
         GsonRequest<Table<Item>> itemTableRequest = AirtableApiService.getInstance(getApplication())
-                .requestItemTable(minLatitude, maxLatitude, minLongitude, maxLongitude, typeOfSearch,
+                .requestItemTable(minLatitude, maxLatitude, minLongitude, maxLongitude, typeOfSearch, categoryId,
                         response -> {
                             for (Record<Item> record : response.getRecords()) {
                                 Item item = record.getRow();
@@ -86,6 +101,20 @@ public class MainViewModel extends AndroidViewModel {
                         },
                         error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
         queue.add(itemTableRequest);
+    }
+
+    public void obtainCategories() {
+        RequestQueue queue = Volley.newRequestQueue(getApplication());
+        GsonRequest<Table<Category>> categoryTableRequest = AirtableApiService.getInstance(getApplication())
+                .requestCategoryTable(
+                        response -> {
+                            categories = new ArrayList<>(response.getRecords().size());
+                            for (Record<Category> record : response.getRecords()) {
+                                categories.add(record.getRow());
+                            }
+                        },
+                        error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
+        queue.add(categoryTableRequest);
     }
 
 }

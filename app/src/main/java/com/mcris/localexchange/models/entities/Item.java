@@ -10,6 +10,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.maps.android.clustering.ClusterItem;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Item implements ClusterItem {
@@ -37,10 +38,12 @@ public class Item implements ClusterItem {
     @SerializedName("Thumbnail")
     @Expose
     private String thumbnailUrl;
-
     @SerializedName("Type")
     @Expose
     private Typology typology;
+    @SerializedName("Category")
+    @Expose
+    private List<String> categories;
 
     private Bitmap thumbnailBitmap;
 
@@ -118,6 +121,14 @@ public class Item implements ClusterItem {
 
     public void setTypology(Typology typology) {
         this.typology = typology;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
     }
 
     @NonNull
