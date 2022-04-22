@@ -35,7 +35,7 @@ public class MainViewModel extends AndroidViewModel {
 
     private Item.Typology typeOfSearch;
 
-    private String categoryId;
+    private String selectedCategoryId;
 
     public ObservableMap<String, Item> getObservableItems() {
         return observableItems;
@@ -56,12 +56,19 @@ public class MainViewModel extends AndroidViewModel {
         this.typeOfSearch = typeOfSearch;
     }
 
-    public String getCategoryId() {
-        return categoryId;
+    public List<Category> getCategories() {
+        if (categories == null) {
+            obtainCategories();
+        }
+        return categories;
     }
 
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
+    public String getSelectedCategoryId() {
+        return selectedCategoryId;
+    }
+
+    public void setSelectedCategoryId(String selectedCategoryId) {
+        this.selectedCategoryId = selectedCategoryId;
     }
 
     public MainViewModel(@NonNull Application application) {
@@ -74,7 +81,7 @@ public class MainViewModel extends AndroidViewModel {
                             double minLongitude, double maxLongitude) {
         RequestQueue queue = Volley.newRequestQueue(getApplication());
         GsonRequest<Table<Item>> itemTableRequest = AirtableApiService.getInstance(getApplication())
-                .requestItemTable(minLatitude, maxLatitude, minLongitude, maxLongitude, typeOfSearch, categoryId,
+                .requestItemTable(minLatitude, maxLatitude, minLongitude, maxLongitude, typeOfSearch, selectedCategoryId,
                         response -> {
                             for (Record<Item> record : response.getRecords()) {
                                 Item item = record.getRow();
