@@ -14,8 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.ObservableMap;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -32,7 +30,6 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.mcris.localexchange.R;
 import com.mcris.localexchange.databinding.ActivityMainBinding;
 import com.mcris.localexchange.models.ItemClusterRenderer;
-import com.mcris.localexchange.models.ItemsAdapter;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.viewmodels.MainViewModel;
 
@@ -41,15 +38,13 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
     private ActivityMainBinding binding;
-    private ClusterManager<Item> clusterManager;
-
-    private BottomSheetBehavior<LinearLayout> sheetBehavior;
-    private RecyclerView recyclerView;
-    private ItemsAdapter itemsAdapter;
     private MainViewModel mainViewModel;
 
+    private GoogleMap mMap;
+    private BottomSheetBehavior<LinearLayout> sheetBehavior;
+
+    private ClusterManager<Item> clusterManager;
     private FusedLocationProviderClient fusedLocationClient;
 
     @Override
@@ -63,11 +58,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         sheetBehavior = BottomSheetBehavior.from(bottomMenuLayout);
         ImageView menuHandler = findViewById(R.id.menuHandler);
 
-        recyclerView = findViewById(R.id.mainRecyclerView);
-        itemsAdapter = new ItemsAdapter();
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(itemsAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.bottom_menu_fragment_container, ItemsListFragment.class, null)
+                    .commit();
+        }
 
         menuHandler.setOnClickListener(v -> {
             if (sheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
@@ -156,14 +152,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         binding.supplyToggleButton.addOnCheckedChangeListener((button, isChecked) -> {
             if (isChecked) {
                 mainViewModel.setTypeOfSearch(Item.Typology.SELL);
-                clearItems();
+                mainViewModel.getObservableItems().clear();
                 obtainItems();
             }
         });
         binding.demandToggleButton.addOnCheckedChangeListener((button, isChecked) -> {
             if (isChecked) {
                 mainViewModel.setTypeOfSearch(Item.Typology.BUY);
-                clearItems();
+                mainViewModel.getObservableItems().clear();
                 obtainItems();
             }
         });
@@ -184,17 +180,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraIdleListener(clusterManager);
         mMap.setOnMarkerClickListener(clusterManager);
 
-        mainViewModel.getUserLocation().observe(this, latLng -> setCurrentLocation(latLng));
+        mainViewModel.getUserLocation().observe(this, latLng -> setCurrentLocationOnMap(latLng));
 
-        setCurrentLocation(mainViewModel.getUserLocation().getValue());
+        setCurrentLocationOnMap(mainViewModel.getUserLocation().getValue());
 
-        addItemsToMapAndList(mainViewModel.getObservableItems().values());
+        addItemsToMap(mainViewModel.getObservableItems().values());
 
         mainViewModel.getObservableItems().addOnMapChangedCallback(
                 new ObservableMap.OnMapChangedCallback<ObservableMap<String, Item>, String, Item>() {
                     @Override
                     public void onMapChanged(ObservableMap<String, Item> sender, String key) {
-                        if (key != null) addItemToMapAndList(sender.get(key));
+                        if (sender.size() == 0) clearItemsOnMap();
+                        if (key != null) addItemToMap(sender.get(key));
                     }
                 });
     }
@@ -212,28 +209,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mainViewModel.obtainItems(minLatitude, maxLatitude, minLongitude, maxLongitude);
     }
 
-    private void setCurrentLocation(LatLng latLng) {
+    private void setCurrentLocationOnMap(LatLng latLng) {
         mMap.moveCamera(CameraUpdateFactory.zoomTo(17f));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        itemsAdapter.setReferencePosition(latLng);
     }
 
-    private void addItemToMapAndList(Item item) {
+    private void addItemToMap(Item item) {
         clusterManager.addItem(item);
-        itemsAdapter.addItem(item);
         clusterManager.cluster();
     }
 
-    private void addItemsToMapAndList(Collection<Item> items) {
+    private void addItemsToMap(Collection<Item> items) {
         clusterManager.addItems(items);
-        itemsAdapter.addItems(items);
         clusterManager.cluster();
     }
 
-    private void clearItems() {
-        mainViewModel.getObservableItems().clear();
+    private void clearItemsOnMap() {
         clusterManager.clearItems();
-        itemsAdapter.clearItems();
         clusterManager.cluster();
     }
 

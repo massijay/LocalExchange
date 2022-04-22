@@ -22,8 +22,8 @@
         android:src="@drawable/rounded_handler"
         tools:ignore="ContentDescription" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/mainRecyclerView"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/bottom_menu_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
