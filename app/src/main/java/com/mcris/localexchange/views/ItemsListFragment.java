@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.mcris.localexchange.R;
 import com.mcris.localexchange.databinding.FragmentItemsListBinding;
 import com.mcris.localexchange.models.ItemsAdapter;
 import com.mcris.localexchange.models.entities.Item;
@@ -27,10 +26,6 @@ public class ItemsListFragment extends Fragment {
     private MainViewModel mainViewModel;
 
     private ItemsAdapter itemsAdapter;
-
-    public ItemsListFragment() {
-        super(R.layout.fragment_items_list);
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
