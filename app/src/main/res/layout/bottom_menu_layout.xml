@@ -8,7 +8,7 @@
     android:background="@drawable/top_rounded_corners"
     android:orientation="vertical"
     app:behavior_hideable="false"
-    app:behavior_peekHeight="126dp"
+    app:behavior_peekHeight="135dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <ImageView
@@ -17,8 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:paddingHorizontal="5dp"
-        android:paddingTop="7dp"
-        android:paddingBottom="2dp"
+        android:paddingVertical="10dp"
         android:src="@drawable/rounded_handler"
         tools:ignore="ContentDescription" />
 
