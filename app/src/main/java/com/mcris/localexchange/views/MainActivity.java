@@ -65,6 +65,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .commit();
         }
 
+        binding.filterButton.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.bottom_menu_fragment_container, CategoriesSelectionFragment.class, null)
+                    .commit();
+            sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        });
+
         menuHandler.setOnClickListener(v -> {
             if (sheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                 sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
