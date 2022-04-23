@@ -46,6 +46,10 @@ public class ItemsListFragment extends Fragment {
 
         itemsAdapter = new ItemsAdapter();
 
+        itemsAdapter.setOnClickListener((item, position) -> {
+            // View item details page
+        });
+
         binding.mainRecyclerView.setHasFixedSize(true);
         binding.mainRecyclerView.setAdapter(itemsAdapter);
         binding.mainRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

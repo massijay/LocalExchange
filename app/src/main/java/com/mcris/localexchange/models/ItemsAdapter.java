@@ -17,14 +17,16 @@ import com.mcris.localexchange.models.entities.Item;
 import java.util.Collection;
 import java.util.Locale;
 
-public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
+public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder>
+        implements ClickableAdapter<Item> {
 
+    private ClickableAdapterListener<Item> listener;
     private LatLng referencePosition;
     private final SortedList<Item> sortedItems;
 
     public ItemsAdapter() {
         referencePosition = new LatLng(0, 0);
-        sortedItems = new SortedList<Item>(Item.class, new SortedList.Callback<Item>() {
+        sortedItems = new SortedList<>(Item.class, new SortedList.Callback<Item>() {
             @Override
             public int compare(Item i1, Item i2) {
                 int multiplier = 100_000;
@@ -76,7 +78,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
     public ItemsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.item_recycler_view_row, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, sortedItems, listener);
     }
 
     @Override
@@ -118,6 +120,11 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
         sortedItems.clear();
     }
 
+    @Override
+    public void setOnClickListener(ClickableAdapterListener<Item> listener) {
+        this.listener = listener;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageView;
@@ -125,12 +132,18 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
         TextView priceTextView;
         TextView descriptionTextView;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolder(@NonNull View itemView, SortedList<Item> items, ClickableAdapterListener<Item> clickListener) {
             super(itemView);
             imageView = itemView.findViewById(R.id.rowImageView);
             titleTextView = itemView.findViewById(R.id.rowTitleTextView);
             priceTextView = itemView.findViewById(R.id.rowPriceTextView);
             descriptionTextView = itemView.findViewById(R.id.rowDescriptionTextView);
+            itemView.setOnClickListener(v -> {
+                if (clickListener != null) {
+                    int pos = getAdapterPosition();
+                    clickListener.onListItemClick(items.get(pos), pos);
+                }
+            });
         }
     }
 }
