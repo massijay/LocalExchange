@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
                     .replace(R.id.bottom_menu_fragment_container, ItemsListFragment.class, null)
+                    .addToBackStack(null)
                     .commit();
         }
 
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
                     .replace(R.id.bottom_menu_fragment_container, CategoriesSelectionFragment.class, null)
+                    .addToBackStack(null)
                     .commit();
             sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
