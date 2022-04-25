@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.mcris.localexchange.R;
 import com.mcris.localexchange.models.entities.Category;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
     @Override
     public ViewHolder<Category> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(android.R.layout.simple_list_item_2, parent, false);
+        View view = inflater.inflate(R.layout.category_recycler_view_row, parent, false);
         return new ViewHolder<>(view, categories, listener);
     }
 
@@ -54,8 +55,8 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
 
         public ViewHolder(@NonNull View itemView, List<T> items, ClickableAdapterListener<T> clickListener) {
             super(itemView);
-            textView1 = itemView.findViewById(android.R.id.text1);
-            textView2 = itemView.findViewById(android.R.id.text2);
+            textView1 = itemView.findViewById(R.id.categoryNameTextView);
+            textView2 = itemView.findViewById(R.id.categoryShortDescrTextView);
             itemView.setOnClickListener(v -> {
                 if (clickListener != null) {
                     int pos = getAdapterPosition();
