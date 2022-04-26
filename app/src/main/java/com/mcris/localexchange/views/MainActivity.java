@@ -24,7 +24,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.maps.android.clustering.ClusterManager;
@@ -186,6 +185,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         };
         clusterManager.setRenderer(new ItemClusterRenderer(this, mMap, clusterManager));
 
+        clusterManager.setOnClusterItemClickListener(item -> {
+            focusItemOnMap(item);
+            return true;
+        });
+
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
         mMap.setOnCameraIdleListener(clusterManager);
@@ -221,11 +225,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void focusItemOnMap(Item item) {
-        if (clusterManager.getRenderer() instanceof ItemClusterRenderer) {
-            ItemClusterRenderer renderer = (ItemClusterRenderer) clusterManager.getRenderer();
-            Marker marker = renderer.getMarker(item);
-            marker.showInfoWindow();
-        }
         setCurrentLocationOnMap(item.getLatLng(), 18f);
     }
 
