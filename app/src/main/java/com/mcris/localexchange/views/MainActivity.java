@@ -24,6 +24,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.maps.android.clustering.ClusterManager;
@@ -219,9 +220,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mainViewModel.obtainItems(minLatitude, maxLatitude, minLongitude, maxLongitude);
     }
 
+    public void focusItemOnMap(Item item) {
+        if (clusterManager.getRenderer() instanceof ItemClusterRenderer) {
+            ItemClusterRenderer renderer = (ItemClusterRenderer) clusterManager.getRenderer();
+            Marker marker = renderer.getMarker(item);
+            marker.showInfoWindow();
+        }
+        setCurrentLocationOnMap(item.getLatLng(), 18f);
+    }
+
     private void setCurrentLocationOnMap(LatLng latLng) {
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(17f));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        setCurrentLocationOnMap(latLng, 17f);
+    }
+
+    private void setCurrentLocationOnMap(LatLng latLng, float zoom) {
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
     private void addItemToMap(Item item) {

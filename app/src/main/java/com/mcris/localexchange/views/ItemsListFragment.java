@@ -48,6 +48,9 @@ public class ItemsListFragment extends Fragment {
 
         itemsAdapter.setOnClickListener((item, position) -> {
             // View item details page
+            if (getActivity() != null && getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).focusItemOnMap(item);
+            }
         });
 
         binding.mainRecyclerView.setHasFixedSize(true);
