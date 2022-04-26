@@ -3,6 +3,7 @@ package com.mcris.localexchange.models;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,28 +12,34 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.mcris.localexchange.R;
 import com.mcris.localexchange.models.entities.Category;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.ViewHolder<Category>>
+public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.CategoryViewHolder>
         implements ClickableAdapter<Category> {
 
     private ClickableAdapterListener<Category> listener;
     private final List<Category> categories;
 
+    private final List<CategoryViewHolder> holders;
+
     public CategoriesAdapter(List<Category> categories) {
         this.categories = categories;
+        holders = new ArrayList<>();
     }
 
     @NonNull
     @Override
-    public ViewHolder<Category> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.category_recycler_view_row, parent, false);
-        return new ViewHolder<>(view, categories, listener);
+        CategoryViewHolder holder = new CategoryViewHolder(view, this);
+        holders.add(holder);
+        return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         Category category = categories.get(position);
         holder.textView1.setText(category.getName());
         holder.textView2.setText(category.getDescription());
@@ -48,19 +55,37 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
         this.listener = listener;
     }
 
-    public static class ViewHolder<T> extends RecyclerView.ViewHolder {
+    public Category getSelectedCategory() {
+        for (CategoryViewHolder h : holders) {
+            if (h.radioButton.isChecked()) {
+                return categories.get(h.getAdapterPosition());
+            }
+        }
+        return null;
+    }
+
+    public static class CategoryViewHolder extends RecyclerView.ViewHolder {
 
         TextView textView1;
         TextView textView2;
+        RadioButton radioButton;
 
-        public ViewHolder(@NonNull View itemView, List<T> items, ClickableAdapterListener<T> clickListener) {
+        public CategoryViewHolder(@NonNull View itemView, CategoriesAdapter adapter) {
             super(itemView);
             textView1 = itemView.findViewById(R.id.categoryNameTextView);
             textView2 = itemView.findViewById(R.id.categoryShortDescrTextView);
+            radioButton = itemView.findViewById(R.id.categoryRowRadioButton);
+            radioButton.setClickable(false);
             itemView.setOnClickListener(v -> {
-                if (clickListener != null) {
+                if (adapter.listener != null) {
                     int pos = getAdapterPosition();
-                    clickListener.onListItemClick(items.get(pos), pos);
+                    for (CategoryViewHolder h : adapter.holders) {
+                        if (h.radioButton != radioButton) {
+                            h.radioButton.setChecked(false);
+                        }
+                    }
+                    radioButton.setChecked(!radioButton.isChecked());
+                    adapter.listener.onListItemClick(adapter.categories.get(pos), pos);
                 }
             });
         }
