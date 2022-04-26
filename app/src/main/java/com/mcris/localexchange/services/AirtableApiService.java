@@ -3,6 +3,7 @@ package com.mcris.localexchange.services;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.net.Uri;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -67,23 +68,33 @@ public class AirtableApiService {
     public GsonRequest<Table<Item>> requestItemTable(double minLatitude, double maxLatitude,
                                                      double minLongitude, double maxLongitude,
                                                      Item.Typology type, String categoryId,
+                                                     String searchText,
                                                      Response.Listener<Table<Item>> listener,
                                                      Response.ErrorListener errorListener) {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + API_KEY);
 
-        String formula = "&filterByFormula=" +
-                "AND%28" +                                                                          // AND(
-                "Latitude%3E%3D" + minLatitude +                                                    // Latitude>=minLatitude
-                "%2C" + "Latitude%3C%3D" + maxLatitude +                                            // ,Latitude<=maxLatitude
-                "%2C" + "Longitude%3E%3D" + minLongitude +                                          // ,Longitude>=minLongitude
-                "%2C" + "Longitude%3C%3D" + maxLongitude +                                          // ,Longitude<=maxLongitude
-                (type != null ? "%2C" + "Type%3D%22" + type + "%22" : "") +                         // ,Type="type"
-                (categoryId != null ? "%2C" + "Category%3D%22" + categoryId + "%22" : "") +         // ,Category="categoryId"
-                "%29";                                                                              // )
+        if (categoryId != null && categoryId.trim().isEmpty()) {
+            categoryId = null;
+        }
+        if (searchText != null && searchText.trim().isEmpty()) {
+            searchText = null;
+        }
+
+        String formula = "AND(" +
+                "Latitude>=" + minLatitude +
+                ",Latitude<=" + maxLatitude +
+                ",Longitude>=" + minLongitude +
+                ",Longitude<=" + maxLongitude +
+                (type != null ? ",Type=\"" + type + "\"" : "") +
+                (categoryId != null ? ",Category=\"" + categoryId + "\"" : "") +
+                (searchText != null ? ",FIND(LOWER(\"" + searchText + "\"),LOWER(Name))>0" : "") +
+                ")";
+
+        String url = itemsBaseQuery + "&filterByFormula=" + Uri.encode(formula);
 
         return new GsonRequest<>(
-                Request.Method.GET, itemsBaseQuery + formula, headers,
+                Request.Method.GET, url, headers,
                 new TypeToken<Table<Item>>() {
                 }.getType(),
                 listener, errorListener);
