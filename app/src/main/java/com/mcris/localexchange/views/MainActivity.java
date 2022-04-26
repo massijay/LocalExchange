@@ -269,4 +269,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 ? v
                 : defaultValue;
     }
+
+    public void hideSoftKeyboard(View v) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (imm.isAcceptingText()) {
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (getCurrentFocus() != null) {
+            hideSoftKeyboard(getCurrentFocus());
+        }
+        return super.dispatchTouchEvent(ev);
+    }
 }
