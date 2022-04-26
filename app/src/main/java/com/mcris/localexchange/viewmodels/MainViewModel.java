@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mcris.localexchange.models.entities.Category;
@@ -29,16 +30,32 @@ import java.util.List;
 public class MainViewModel extends AndroidViewModel {
 
     private final ObservableArrayMap<String, Item> observableItems;
-    private List<Category> categories;
+    private List<Category> allCategories;
 
     private MutableLiveData<LatLng> userLocation;
 
+    private LatLngBounds latLngBounds;
     private Item.Typology typeOfSearch;
-
     private String selectedCategoryId;
+    private String searchText;
+
+    public LatLngBounds getLatLngBounds() {
+        return latLngBounds;
+    }
+
+    public void setLatLngBounds(LatLngBounds latLngBounds) {
+        this.latLngBounds = latLngBounds;
+    }
 
     public ObservableMap<String, Item> getObservableItems() {
         return observableItems;
+    }
+
+    public List<Category> getAllCategories() {
+        if (allCategories == null) {
+            downloadCategories();
+        }
+        return allCategories;
     }
 
     public MutableLiveData<LatLng> getUserLocation() {
@@ -56,13 +73,6 @@ public class MainViewModel extends AndroidViewModel {
         this.typeOfSearch = typeOfSearch;
     }
 
-    public List<Category> getCategories() {
-        if (categories == null) {
-            obtainCategories();
-        }
-        return categories;
-    }
-
     public String getSelectedCategoryId() {
         return selectedCategoryId;
     }
@@ -71,17 +81,28 @@ public class MainViewModel extends AndroidViewModel {
         this.selectedCategoryId = selectedCategoryId;
     }
 
+    public String getSearchText() {
+        return searchText;
+    }
+
+    public void setSearchText(String searchText) {
+        this.searchText = searchText != null ? searchText.trim() : null;
+    }
+
     public MainViewModel(@NonNull Application application) {
         super(application);
         observableItems = new ObservableArrayMap<>();
         typeOfSearch = Item.Typology.SELL;
     }
 
-    public void obtainItems(double minLatitude, double maxLatitude,
-                            double minLongitude, double maxLongitude) {
+    public void downloadItems() {
+        double minLatitude = latLngBounds.southwest.latitude;
+        double minLongitude = latLngBounds.southwest.longitude;
+        double maxLatitude = latLngBounds.northeast.latitude;
+        double maxLongitude = latLngBounds.northeast.longitude;
         RequestQueue queue = Volley.newRequestQueue(getApplication());
         GsonRequest<Table<Item>> itemTableRequest = AirtableApiService.getInstance(getApplication())
-                .requestItemTable(minLatitude, maxLatitude, minLongitude, maxLongitude, typeOfSearch, selectedCategoryId,
+                .requestItemTable(minLatitude, maxLatitude, minLongitude, maxLongitude, typeOfSearch, selectedCategoryId, searchText,
                         response -> {
                             for (Record<Item> record : response.getRecords()) {
                                 Item item = record.getRow();
@@ -110,14 +131,14 @@ public class MainViewModel extends AndroidViewModel {
         queue.add(itemTableRequest);
     }
 
-    public void obtainCategories() {
+    public void downloadCategories() {
         RequestQueue queue = Volley.newRequestQueue(getApplication());
         GsonRequest<Table<Category>> categoryTableRequest = AirtableApiService.getInstance(getApplication())
                 .requestCategoryTable(
                         response -> {
-                            categories = new ArrayList<>(response.getRecords().size());
+                            allCategories = new ArrayList<>(response.getRecords().size());
                             for (Record<Category> record : response.getRecords()) {
-                                categories.add(record.getRow());
+                                allCategories.add(record.getRow());
                             }
                         },
                         error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());

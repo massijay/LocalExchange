@@ -2,9 +2,12 @@ package com.mcris.localexchange.views;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -23,7 +26,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.maps.android.clustering.ClusterManager;
@@ -72,14 +74,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .replace(R.id.bottom_menu_fragment_container, CategoriesSelectionFragment.class, null)
                     .addToBackStack(null)
                     .commit();
-            sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
         menuHandler.setOnClickListener(v -> {
             if (sheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                setSheetBehaviorState(BottomSheetBehavior.STATE_COLLAPSED);
             } else {
-                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
         sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -140,7 +142,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
-        mainViewModel.obtainCategories();
+        mainViewModel.downloadCategories();
+    }
+
+    public void setSheetBehaviorState(int state) {
+        sheetBehavior.setState(state);
     }
 
     /**
@@ -211,17 +217,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
-    private void obtainItems() {
+    public void obtainItems() {
         // latLngBounds contain the north-east and south-west coordinates
         // of the rectangle just outside of the screen
         // i.e. the screen vertices are on the sides of the map rectangle
-        LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-
-        double minLatitude = bounds.southwest.latitude;
-        double minLongitude = bounds.southwest.longitude;
-        double maxLatitude = bounds.northeast.latitude;
-        double maxLongitude = bounds.northeast.longitude;
-        mainViewModel.obtainItems(minLatitude, maxLatitude, minLongitude, maxLongitude);
+        mainViewModel.setLatLngBounds(mMap.getProjection().getVisibleRegion().latLngBounds);
+        mainViewModel.downloadItems();
     }
 
     public void focusItemOnMap(Item item) {
