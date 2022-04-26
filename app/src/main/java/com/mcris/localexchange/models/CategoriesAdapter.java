@@ -20,11 +20,14 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
 
     private ClickableAdapterListener<Category> listener;
     private final List<Category> categories;
+    private int selected;
 
+    // Needed only for visual purposes
     private final List<CategoryViewHolder> holders;
 
     public CategoriesAdapter(List<Category> categories) {
         this.categories = categories;
+        selected = -1;
         holders = new ArrayList<>();
     }
 
@@ -43,6 +46,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
         Category category = categories.get(position);
         holder.textView1.setText(category.getName());
         holder.textView2.setText(category.getDescription());
+        holder.radioButton.setChecked(position == selected);
     }
 
     @Override
@@ -56,12 +60,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
     }
 
     public Category getSelectedCategory() {
-        for (CategoryViewHolder h : holders) {
-            if (h.radioButton.isChecked()) {
-                return categories.get(h.getAdapterPosition());
-            }
-        }
-        return null;
+        return selected > -1 ? categories.get(selected) : null;
     }
 
     public static class CategoryViewHolder extends RecyclerView.ViewHolder {
@@ -77,14 +76,19 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
             radioButton = itemView.findViewById(R.id.categoryRowRadioButton);
             radioButton.setClickable(false);
             itemView.setOnClickListener(v -> {
+                int pos = getAdapterPosition();
+                adapter.selected = adapter.selected != pos ? pos : -1;
+                // UI changes here are just visual while this holder (row) is visible
+                // Once it goes outside of the screen the RecyclerView could recycle it.
+                // So we have to save the state in another place (i.e. adapter.selected variable)
+                // and update UI in the onBindViewHolder() method too for rows that are appearing
+                // in the screen
+                for (CategoryViewHolder h : adapter.holders) {
+                    h.radioButton.setChecked(false);
+                }
+                radioButton.setChecked(pos == adapter.selected);
+                // Finally, if exists, call the function the user passed as listener
                 if (adapter.listener != null) {
-                    int pos = getAdapterPosition();
-                    for (CategoryViewHolder h : adapter.holders) {
-                        if (h.radioButton != radioButton) {
-                            h.radioButton.setChecked(false);
-                        }
-                    }
-                    radioButton.setChecked(!radioButton.isChecked());
                     adapter.listener.onListItemClick(adapter.categories.get(pos), pos);
                 }
             });
