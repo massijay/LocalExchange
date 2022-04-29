@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".views.ItemDetailsFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/itemDetailsScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingBottom="10dp">
+
+        <LinearLayout
+            android:id="@+id/itemDetailsConstraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/itemImageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="-10dp"
+                android:adjustViewBounds="true"
+                android:maxHeight="350dp"
+                android:src="@drawable/test_product"
+                android:layout_marginBottom="5dp" />
+
+            <TextView
+                android:id="@+id/itemDateTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:text="27 febbraio" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:text="Name\ntwo lines"
+                android:textAppearance="?attr/textAppearanceHeadline5" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="5dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/itemPriceTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="39 €"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textColor="@color/purple_200" />
+
+                <TextView
+                    android:id="@+id/itemTypeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:background="@drawable/rounded_rectangle"
+                    android:backgroundTint="@color/purple_200"
+                    android:paddingHorizontal="5dp"
+                    android:text="sell"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textColor="?attr/colorSurface" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/itemDescriptionTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="10dp"
+                android:text="Sed eum laoreet sed et clita sanctus quis. Magna in dolor sed. Sea voluptua takimata dolor ut consetetur volutpat aliquip diam dolor nulla vulputate takimata lorem ipsum sed sadipscing consequat iusto. Illum ut vero no no sanctus veniam amet tempor minim no dolor sed dignissim nonumy exerci sea sadipscing at. Amet accusam tempor sadipscing quis ipsum sanctus ipsum sed sed eirmod elitr voluptua takimata blandit. Dolor commodo clita iriure nulla luptatum et at velit. Diam tempor consequat. Et amet nibh molestie.\n\nDolor stet aliquyam kasd sit duis eos et invidunt et aliquam et tempor luptatum vero. Sanctus consequat nibh imperdiet accusam exerci est tincidunt accusam justo accusam tempor. Et esse ullamcorper aliquyam elitr eirmod sea et voluptua gubergren dolor no nibh eos suscipit velit sanctus lorem. Sit sed sadipscing erat sea ipsum nonumy consetetur no dolore suscipit magna elitr tempor et sit autem no ut."
+                android:textAppearance="?attr/textAppearanceBody1" />
+
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginHorizontal="10dp"
+                android:drawableTint="?attr/colorOnSurface"
+                android:paddingVertical="10dp"
+                android:text="Antani"
+                android:textAllCaps="false"
+                android:textColor="?attr/colorOnSurface"
+                app:icon="@drawable/ic_round_person_24"
+                app:iconPadding="20dp"
+                app:iconTint="?attr/colorOnSurface" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="10dp"
+                android:text="Nella categoria" />
+
+            <TextView
+                android:id="@+id/itemCategoryTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="10dp"
+                android:text="Accessori"
+                android:textAppearance="?attr/textAppearanceBody1" />
+
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</FrameLayout>

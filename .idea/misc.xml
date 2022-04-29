@@ -9,6 +9,7 @@
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/ic_outline_filter_alt_24.xml" value="0.411" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/ic_outline_search_24.xml" value="0.312" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/rounded_handler.xml" value="0.312" />
+        <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/rounded_rectangle.xml" value="0.2895" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/top_rounded_corners.xml" value="0.31" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/layout-v23/activity_main.xml" value="0.4427083333333333" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/layout/activity_culo.xml" value="0.30885416666666665" />
@@ -19,6 +20,7 @@
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/layout/category_recycler_view_row.xml" value="0.4427083333333333" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/layout/custom_marker_layout.xml" value="0.5714285714285714" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/layout/fragment_categories_selection.xml" value="0.30885416666666665" />
+        <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/layout/fragment_item_details.xml" value="0.28541666666666665" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/layout/fragment_items_list.xml" value="0.3177083333333333" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/layout/item_recycler_view_row.xml" value="0.4427083333333333" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/layout/main_menu_layout.xml" value="0.4427083333333333" />
