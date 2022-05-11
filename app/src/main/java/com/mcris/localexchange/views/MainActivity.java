@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.ObservableMap;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -61,19 +62,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ImageView menuHandler = findViewById(R.id.menuHandler);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.bottom_menu_fragment_container, ItemsListFragment.class, null)
-                    .addToBackStack(null)
-                    .commit();
+            navigateToFragment(ItemsListFragment.class);
         }
 
         binding.filterButton.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.bottom_menu_fragment_container, CategoriesSelectionFragment.class, null)
-                    .addToBackStack(null)
-                    .commit();
+            navigateToFragment(CategoriesSelectionFragment.class);
             setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
         });
 
@@ -145,10 +138,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mainViewModel.downloadCategories();
     }
 
-    public void setSheetBehaviorState(int state) {
-        sheetBehavior.setState(state);
-    }
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -170,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mainViewModel.setTypeOfSearch(Item.Typology.SELL);
                 mainViewModel.getObservableItems().clear();
                 obtainItems();
+                setSheetBehaviorState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
         binding.demandToggleButton.addOnCheckedChangeListener((button, isChecked) -> {
@@ -177,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mainViewModel.setTypeOfSearch(Item.Typology.BUY);
                 mainViewModel.getObservableItems().clear();
                 obtainItems();
+                setSheetBehaviorState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
 
@@ -193,6 +184,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         clusterManager.setOnClusterItemClickListener(item -> {
             focusItemOnMap(item);
+            mainViewModel.setSelectedItem(item);
+            navigateToFragment(ItemDetailsFragment.class);
+            setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
             return true;
         });
 
@@ -217,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
-    public void obtainItems() {
+    private void obtainItems() {
         // latLngBounds contain the north-east and south-west coordinates
         // of the rectangle just outside of the screen
         // i.e. the screen vertices are on the sides of the map rectangle
@@ -250,6 +244,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void clearItemsOnMap() {
         clusterManager.clearItems();
         clusterManager.cluster();
+    }
+
+    public <T extends Fragment> void navigateToFragment(Class<T> fragmentClass) {
+        getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.bottom_menu_fragment_container, fragmentClass, null)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void setSheetBehaviorState(int state) {
+        sheetBehavior.setState(state);
     }
 
     @Override

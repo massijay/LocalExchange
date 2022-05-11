@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mcris.localexchange.databinding.FragmentItemsListBinding;
 import com.mcris.localexchange.models.ItemsAdapter;
 import com.mcris.localexchange.models.entities.Item;
@@ -47,9 +48,12 @@ public class ItemsListFragment extends Fragment {
         itemsAdapter = new ItemsAdapter();
 
         itemsAdapter.setOnClickListener((item, position) -> {
-            // View item details page
+            mainViewModel.setSelectedItem(item);
             if (getActivity() != null && getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).focusItemOnMap(item);
+                MainActivity mainActivity = (MainActivity) getActivity();
+                mainActivity.focusItemOnMap(item);
+                mainActivity.navigateToFragment(ItemDetailsFragment.class);
+                mainActivity.setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
 
