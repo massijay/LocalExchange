@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ThemeOverlay.AnotherColorMaterialButton" parent="">
-        <item name="colorPrimary">@color/teal_200</item>
+    <style name="ThemeOverlay.SecondaryColorMaterialButton" parent="">
+        <item name="colorPrimary">?attr/colorSecondary</item>
     </style>
 </resources>

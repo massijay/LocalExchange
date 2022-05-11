@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/supply_toggle_button_text"
-            android:theme="@style/ThemeOverlay.AnotherColorMaterialButton"
+            android:theme="@style/ThemeOverlay.SecondaryColorMaterialButton"
             app:backgroundTint="?attr/colorSurface" />
 
         <com.google.android.material.button.MaterialButton
@@ -57,24 +57,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
-        android:src="@drawable/ic_outline_filter_alt_24"
+        android:contentDescription="Find"
+        android:src="@drawable/ic_outline_search_24"
+        app:backgroundTint="@color/blue_gmaps"
         app:fabSize="mini"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="?attr/colorSurface"
-        android:contentDescription="Filter" />
+        app:tint="?attr/colorSurface" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/searchButton"
+        android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
-        android:src="@drawable/ic_outline_search_24"
+        android:contentDescription="Insert your item"
+        android:src="@drawable/ic_round_add_24"
+        app:backgroundTint="@color/blue_gmaps"
         app:fabSize="mini"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="?attr/colorSurface"
-        android:contentDescription="Find" />
+        app:tint="?attr/colorSurface" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
