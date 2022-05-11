@@ -10,6 +10,9 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.maps.android.clustering.ClusterItem;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,8 +47,19 @@ public class Item implements ClusterItem {
     @SerializedName("Category")
     @Expose
     private List<String> categories;
+    @SerializedName("Owner")
+    @Expose
+    private List<String> ownerId;
+    @SerializedName("Owner Name")
+    @Expose
+    private List<String> ownerName;
+    @SerializedName("Date Added")
+    @Expose
+    private String dateString;
 
     private Bitmap thumbnailBitmap;
+
+    private Bitmap picture;
 
     public String getName() {
         return name;
@@ -127,8 +141,37 @@ public class Item implements ClusterItem {
         return categories;
     }
 
+    public String getCategoryId() {
+        return categories.get(0);
+    }
+
     public void setCategories(List<String> categories) {
         this.categories = categories;
+    }
+
+    public String getOwnerId() {
+        return ownerId.get(0);
+    }
+
+    public String getOwnerName() {
+        return ownerName.get(0);
+    }
+
+    public String getDateString() {
+        return dateString;
+    }
+
+    public LocalDate getDate() {
+        try {
+            return LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE);
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void setDateString(String dateString) {
+        this.dateString = dateString;
     }
 
     @NonNull
@@ -155,6 +198,14 @@ public class Item implements ClusterItem {
 
     public void setThumbnailBitmap(Bitmap thumbnailBitmap) {
         this.thumbnailBitmap = thumbnailBitmap;
+    }
+
+    public Bitmap getPicture() {
+        return picture;
+    }
+
+    public void setPicture(Bitmap picture) {
+        this.picture = picture;
     }
 
     @Override

@@ -13,6 +13,8 @@ import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.models.entities.Table;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AirtableApiService {
     // It's safe (not a memory leak) to save context in a static field as long it is
@@ -21,7 +23,11 @@ public class AirtableApiService {
     private static AirtableApiService instance;
     private Context appContext;
 
+    private final HashMap<String, String> headers;
+
     private AirtableApiService() {
+        headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + API_KEY);
     }
 
     public static AirtableApiService getInstance(Context context) {
@@ -42,22 +48,10 @@ public class AirtableApiService {
     private final String apiUrl = "https://api.airtable.com/v0/";
     private final String baseId = "appT9OoAOwKHPXfYX";
     private final String baseUrl = apiUrl + baseId + "/";
-    private final String itemsBaseQuery = baseUrl + "Item?" +
-            "fields%5B%5D=ID" +
-            "&fields%5B%5D=Name" +
-            "&fields%5B%5D=Description" +
-            "&fields%5B%5D=Latitude" +
-            "&fields%5B%5D=Longitude" +
-            "&fields%5B%5D=Price" +
-            "&fields%5B%5D=Picture" +
-            "&fields%5B%5D=Thumbnail" +
-            "&fields%5B%5D=Type" +
-            "&fields%5B%5D=Category";
+    private final String itemsBaseQuery = baseUrl + "Item?";
     private final String categoryBaseQuery = baseUrl + "Category";
 
     public GsonRequest<Table<Item>> requestItemTable(Response.Listener<Table<Item>> listener, Response.ErrorListener errorListener) {
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer " + API_KEY);
         return new GsonRequest<>(
                 Request.Method.GET, itemsBaseQuery, headers,
                 new TypeToken<Table<Item>>() {
@@ -71,9 +65,6 @@ public class AirtableApiService {
                                                      String searchText,
                                                      Response.Listener<Table<Item>> listener,
                                                      Response.ErrorListener errorListener) {
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer " + API_KEY);
-
         if (categoryId != null && categoryId.trim().isEmpty()) {
             categoryId = null;
         }
@@ -91,7 +82,7 @@ public class AirtableApiService {
                 (searchText != null ? ",FIND(LOWER(\"" + searchText + "\"),LOWER(Name))>0" : "") +
                 ")";
 
-        String url = itemsBaseQuery + "&filterByFormula=" + Uri.encode(formula);
+        String url = itemsBaseQuery + "filterByFormula=" + Uri.encode(formula);
 
         return new GsonRequest<>(
                 Request.Method.GET, url, headers,
@@ -100,15 +91,32 @@ public class AirtableApiService {
                 listener, errorListener);
     }
 
+    public GsonRequest<Table<Item>> requestItem(String itemId,
+                                                Response.Listener<Table<Item>> listener,
+                                                Response.ErrorListener errorListener) {
+        String formula = "ID=\"" + itemId + "\"";
+
+        return new GsonRequest<>(
+                Request.Method.GET, itemsBaseQuery + "filterByFormula=" + Uri.encode(formula), headers,
+                new TypeToken<Table<Item>>() {
+                }.getType(),
+                listener, errorListener);
+    }
+
     public GsonRequest<Table<Category>> requestCategoryTable(Response.Listener<Table<Category>> listener,
                                                              Response.ErrorListener errorListener) {
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer " + API_KEY);
-
         return new GsonRequest<>(
                 Request.Method.GET, categoryBaseQuery, headers,
                 new TypeToken<Table<Category>>() {
                 }.getType(),
                 listener, errorListener);
+    }
+
+    private <T> Response.Listener<Table<T>> transformListener(Response.Listener<List<T>> listener) {
+        return response -> listener.onResponse(
+                response.getRecords()
+                        .stream()
+                        .map(r -> r.getRow())
+                        .collect(Collectors.toList()));
     }
 }
