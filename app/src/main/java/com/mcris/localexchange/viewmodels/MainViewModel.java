@@ -25,12 +25,15 @@ import com.mcris.localexchange.services.AirtableApiService;
 import com.mcris.localexchange.services.GsonRequest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 public class MainViewModel extends AndroidViewModel {
 
     private final ObservableArrayMap<String, Item> observableItems;
-    private List<Category> allCategories;
+    private Map<String, Category> allCategories;
 
     private MutableLiveData<LatLng> userLocation;
 
@@ -38,6 +41,8 @@ public class MainViewModel extends AndroidViewModel {
     private Item.Typology typeOfSearch;
     private String selectedCategoryId;
     private String searchText;
+
+    private Item selectedItem;
 
     public LatLngBounds getLatLngBounds() {
         return latLngBounds;
@@ -55,7 +60,11 @@ public class MainViewModel extends AndroidViewModel {
         if (allCategories == null) {
             downloadCategories();
         }
-        return allCategories;
+        return new ArrayList<>(allCategories.values());
+    }
+
+    public Category getCategoryFromId(String id) {
+        return allCategories.get(id);
     }
 
     public MutableLiveData<LatLng> getUserLocation() {
@@ -87,6 +96,14 @@ public class MainViewModel extends AndroidViewModel {
 
     public void setSearchText(String searchText) {
         this.searchText = searchText != null ? searchText.trim() : null;
+    }
+
+    public Item getSelectedItem() {
+        return selectedItem;
+    }
+
+    public void setSelectedItem(Item selectedItem) {
+        this.selectedItem = selectedItem;
     }
 
     public MainViewModel(@NonNull Application application) {
@@ -131,14 +148,50 @@ public class MainViewModel extends AndroidViewModel {
         queue.add(itemTableRequest);
     }
 
+    public void downloadSelectedItem(Consumer<Item> afterDownloadAction) {
+        RequestQueue queue = Volley.newRequestQueue(getApplication());
+        GsonRequest<Table<Item>> itemRequest = AirtableApiService.getInstance(getApplication())
+                .requestItem(selectedItem.getId(),
+                        response -> {
+                            Item downloaded = response.getRecords().get(0).getRow();
+                            if (downloaded != null) {
+                                downloaded.setThumbnailBitmap(selectedItem.getThumbnailBitmap());
+                                if (selectedItem.getPicture() != null) {
+                                    downloaded.setPicture(selectedItem.getPicture());
+                                    selectedItem = downloaded;
+                                    observableItems.put(downloaded.getId(), downloaded);
+                                    afterDownloadAction.accept(downloaded);
+                                } else if (downloaded.getPictureUrl() != null && !downloaded.getPictureUrl().isEmpty()) {
+                                    FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                                    StorageReference imgRef = storage.getReferenceFromUrl(downloaded.getPictureUrl());
+
+                                    final long TWENTY_MEGABYTES = 20 * 1024 * 1024;
+                                    imgRef.getBytes(TWENTY_MEGABYTES)
+                                            .addOnSuccessListener(bytes -> {
+                                                downloaded.setPicture(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                                                selectedItem = downloaded;
+                                                observableItems.put(downloaded.getId(), downloaded);
+                                                afterDownloadAction.accept(downloaded);
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Toast.makeText(getApplication(), "ERROR: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                            });
+                                }
+                            }
+                        },
+                        error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
+        queue.add(itemRequest);
+    }
+
     public void downloadCategories() {
         RequestQueue queue = Volley.newRequestQueue(getApplication());
         GsonRequest<Table<Category>> categoryTableRequest = AirtableApiService.getInstance(getApplication())
                 .requestCategoryTable(
                         response -> {
-                            allCategories = new ArrayList<>(response.getRecords().size());
+                            allCategories = new HashMap<>(response.getRecords().size());
                             for (Record<Category> record : response.getRecords()) {
-                                allCategories.add(record.getRow());
+                                allCategories.put(record.getRow().getId(), record.getRow());
                             }
                         },
                         error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
