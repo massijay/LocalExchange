@@ -21,6 +21,7 @@ import com.mcris.localexchange.models.entities.Category;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.models.entities.Record;
 import com.mcris.localexchange.models.entities.Table;
+import com.mcris.localexchange.models.entities.User;
 import com.mcris.localexchange.services.AirtableApiService;
 import com.mcris.localexchange.services.GsonRequest;
 
@@ -182,6 +183,20 @@ public class MainViewModel extends AndroidViewModel {
                         },
                         error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
         queue.add(itemRequest);
+    }
+
+    public void downloadUser(Consumer<User> afterDownloadAction) {
+        RequestQueue queue = Volley.newRequestQueue(getApplication());
+        GsonRequest<Table<User>> userRequest = AirtableApiService.getInstance(getApplication())
+                .requestUser(selectedItem.getOwnerId(),
+                        response -> {
+                            User downloaded = response.getRecords().get(0).getRow();
+                            if (downloaded != null) {
+                                afterDownloadAction.accept(downloaded);
+                            }
+                        },
+                        error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
+        queue.add(userRequest);
     }
 
     public void downloadCategories() {

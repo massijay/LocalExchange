@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".views.UserInfoFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/userInfoScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/contactNameTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Ajeje Brazorf"
+                android:textAppearance="?attr/textAppearanceHeadline5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/sendMailButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:src="@drawable/ic_round_email_24"
+                app:backgroundTint="@color/blue_gmaps"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contactNameTextView"
+                app:tint="?attr/colorSurface" />
+
+            <TextView
+                android:id="@+id/emailTextView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="10dp"
+                android:gravity="center_vertical"
+                android:text="mail@example.com"
+                android:textAppearance="?attr/textAppearanceBody1"
+                app:layout_constraintBottom_toBottomOf="@id/sendMailButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/sendMailButton"
+                app:layout_constraintTop_toTopOf="@id/sendMailButton" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/sendSmsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:src="@drawable/ic_round_chat_24"
+                app:backgroundTint="@color/blue_gmaps"
+                app:layout_constraintStart_toStartOf="@id/sendMailButton"
+                app:layout_constraintTop_toBottomOf="@id/sendMailButton"
+                app:tint="?attr/colorSurface" />
+
+            <TextView
+                android:id="@+id/smsTextView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="10dp"
+                android:gravity="center_vertical"
+                android:text="SMS +393367854281"
+                android:textAppearance="?attr/textAppearanceBody1"
+                app:layout_constraintBottom_toBottomOf="@id/sendSmsButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/sendSmsButton"
+                app:layout_constraintTop_toTopOf="@id/sendSmsButton" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/callButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:src="@drawable/ic_round_call_24"
+                app:backgroundTint="@color/blue_gmaps"
+                app:layout_constraintStart_toStartOf="@id/sendMailButton"
+                app:layout_constraintTop_toBottomOf="@id/sendSmsButton"
+                app:tint="?attr/colorSurface" />
+
+            <TextView
+                android:id="@+id/callTextView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="10dp"
+                android:gravity="center_vertical"
+                android:text="Chiama +393367854281"
+                android:textAppearance="?attr/textAppearanceBody1"
+                app:layout_constraintBottom_toBottomOf="@id/callButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/callButton"
+                app:layout_constraintTop_toTopOf="@id/callButton" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/addContactButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:src="@drawable/ic_round_person_add_24"
+                app:backgroundTint="@color/blue_gmaps"
+                app:layout_constraintStart_toStartOf="@id/sendMailButton"
+                app:layout_constraintTop_toBottomOf="@id/callButton"
+                app:tint="?attr/colorSurface" />
+
+            <TextView
+                android:id="@+id/addContactTextView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="10dp"
+                android:gravity="center_vertical"
+                android:text="Aggiungi ai contatti"
+                android:textAppearance="?attr/textAppearanceBody1"
+                app:layout_constraintBottom_toBottomOf="@id/addContactButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/addContactButton"
+                app:layout_constraintTop_toTopOf="@id/addContactButton" />
+
+            <TextView
+                android:id="@+id/registeredFromLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Registrato dal:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/addContactButton" />
+
+            <TextView
+                android:id="@+id/signUpDateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5 aprile"
+                android:textAppearance="?attr/textAppearanceBody2"
+                app:layout_constraintStart_toStartOf="@id/registeredFromLabel"
+                app:layout_constraintTop_toBottomOf="@id/registeredFromLabel" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/loadingIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true" />
+
+
+</FrameLayout>

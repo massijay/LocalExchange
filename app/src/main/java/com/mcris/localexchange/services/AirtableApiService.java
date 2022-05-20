@@ -11,6 +11,7 @@ import com.google.gson.reflect.TypeToken;
 import com.mcris.localexchange.models.entities.Category;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.models.entities.Table;
+import com.mcris.localexchange.models.entities.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,7 @@ public class AirtableApiService {
     private final String baseUrl = apiUrl + baseId + "/";
     private final String itemsBaseQuery = baseUrl + "Item?";
     private final String categoryBaseQuery = baseUrl + "Category";
+    private final String userBaseQuery = baseUrl + "User?";
 
     public GsonRequest<Table<Item>> requestItemTable(Response.Listener<Table<Item>> listener, Response.ErrorListener errorListener) {
         return new GsonRequest<>(
@@ -99,6 +101,18 @@ public class AirtableApiService {
         return new GsonRequest<>(
                 Request.Method.GET, itemsBaseQuery + "filterByFormula=" + Uri.encode(formula), headers,
                 new TypeToken<Table<Item>>() {
+                }.getType(),
+                listener, errorListener);
+    }
+
+    public GsonRequest<Table<User>> requestUser(String userId,
+                                                Response.Listener<Table<User>> listener,
+                                                Response.ErrorListener errorListener) {
+        String formula = "ID=\"" + userId + "\"";
+
+        return new GsonRequest<>(
+                Request.Method.GET, userBaseQuery + "filterByFormula=" + Uri.encode(formula), headers,
+                new TypeToken<Table<User>>() {
                 }.getType(),
                 listener, errorListener);
     }

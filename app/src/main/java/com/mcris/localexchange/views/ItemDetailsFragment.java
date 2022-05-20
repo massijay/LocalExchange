@@ -1,5 +1,7 @@
 package com.mcris.localexchange.views;
 
+import static com.mcris.localexchange.helpers.Utils.getFriendlyDate;
+
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -17,12 +19,11 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mcris.localexchange.databinding.FragmentItemDetailsBinding;
 import com.mcris.localexchange.viewmodels.MainViewModel;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class ItemDetailsFragment extends Fragment {
@@ -76,8 +77,6 @@ public class ItemDetailsFragment extends Fragment {
                         binding.itemDescriptionTextView.setText(item.getDescription());
                         binding.ownerButton.setText(item.getOwnerName());
                         binding.itemCategoryTextView.setText(mainViewModel.getCategoryFromId(item.getCategoryId()).getName());
-                        binding.loadingIndicator.setVisibility(View.GONE);
-                        binding.itemDetailsScrollView.setVisibility(View.VISIBLE);
                         binding.getDirectionsButton.setOnClickListener(v -> {
                             Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + item.getLatitude() + "," + item.getLongitude() + "(" + item.getName() + ")");
                             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -88,6 +87,15 @@ public class ItemDetailsFragment extends Fragment {
                                 Toast.makeText(getActivity(), "Installa l'app Google Maps per visualizzare l'oggetto", Toast.LENGTH_LONG).show();
                             }
                         });
+                        binding.ownerButton.setOnClickListener(v -> {
+                            if (getActivity() != null && getActivity() instanceof MainActivity) {
+                                MainActivity mainActivity = (MainActivity) getActivity();
+                                mainActivity.navigateToFragment(UserInfoFragment.class);
+                                mainActivity.setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
+                            }
+                        });
+                        binding.loadingIndicator.setVisibility(View.GONE);
+                        binding.itemDetailsScrollView.setVisibility(View.VISIBLE);
                     }
                 }));
         return binding.getRoot();
@@ -96,18 +104,5 @@ public class ItemDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-    }
-
-    public static String getFriendlyDate(LocalDate date) {
-        // TODO: use string resources
-        if (date.equals(LocalDate.now())) {
-            return "Oggi";
-        } else if (date.equals(LocalDate.now().minusDays(1))) {
-            return "Ieri";
-        } else if (date.getYear() == LocalDate.now().getYear()) {
-            return date.format(DateTimeFormatter.ofPattern("d MMMM"));
-        } else {
-            return date.format(DateTimeFormatter.ofPattern("d MMMM yyyy"));
-        }
     }
 }
