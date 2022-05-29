@@ -47,7 +47,7 @@ public class Item implements ClusterItem {
     @SerializedName("Category")
     @Expose
     private List<String> categories;
-    @SerializedName("Owner")
+    @SerializedName("Owner ID")
     @Expose
     private List<String> ownerId;
     @SerializedName("Owner Name")

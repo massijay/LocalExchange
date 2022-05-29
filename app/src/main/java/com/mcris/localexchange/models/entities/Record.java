@@ -5,13 +5,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class Record<TableType> {
     @SerializedName("id")
-    @Expose
+    @Expose(serialize = false)
     private String id;
     @SerializedName("fields")
     @Expose
     private TableType row;
     @SerializedName("createdTime")
-    @Expose
+    @Expose(serialize = false)
     private String createdTime;
 
     public String getId() {

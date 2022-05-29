@@ -21,7 +21,7 @@ public class User {
     @Expose
     private String emailAddress;
     @SerializedName("Register Date")
-    @Expose
+    @Expose(serialize = false)
     private String signUpDateString;
 
     public String getName() {
