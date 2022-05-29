@@ -50,7 +50,6 @@ import com.mcris.localexchange.viewmodels.MainViewModel;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -159,21 +158,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 registerForActivityResult(new ActivityResultContracts
                                 .RequestMultiplePermissions(), result -> {
                             Boolean fineLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
-//                            boolean fineLocationGranted = getOrDefault(result, Manifest.permission.ACCESS_FINE_LOCATION, false);
                             Boolean coarseLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false);
 
                             if (Boolean.TRUE.equals(fineLocationGranted) || Boolean.TRUE.equals(coarseLocationGranted)) {
                                 Log.d("AAA", "LOCAZIONE CONCESSA");
                                 CancellationTokenSource cts = new CancellationTokenSource();
-
-                                // Get the last known location
-//                                fusedLocationClient.getLastLocation()
-//                                        .addOnSuccessListener(this, location -> {
-//                                            // Got last known location. In some rare situations this can be null.
-//                                            if (location != null) {
-//                                                mainViewModel.getUserLocation().setValue(new LatLng(location.getLatitude(), location.getLongitude()));
-//                                            }
-//                                        });
 
                                 fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, cts.getToken())
                                         .addOnSuccessListener(location -> {
@@ -346,13 +335,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onStop() {
         super.onStop();
         Log.i("AAA", "STOP MainActivity");
-    }
-
-    private <K, V> V getOrDefault(Map<K, V> map, K key, V defaultValue) {
-        V v;
-        return (((v = map.get(key)) != null) || map.containsKey(key))
-                ? v
-                : defaultValue;
     }
 
     public void hideSoftKeyboard(View v) {
