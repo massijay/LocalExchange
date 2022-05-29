@@ -3,6 +3,7 @@ package com.mcris.localexchange.viewmodels;
 
 import android.app.Application;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mcris.localexchange.models.entities.Category;
@@ -107,6 +110,14 @@ public class MainViewModel extends AndroidViewModel {
         this.selectedItem = selectedItem;
     }
 
+    public FirebaseUser getLoggedUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
+    }
+
+    public boolean isUserLoggedIn() {
+        return getLoggedUser() != null;
+    }
+
     public MainViewModel(@NonNull Application application) {
         super(application);
         observableItems = new ObservableArrayMap<>();
@@ -175,9 +186,7 @@ public class MainViewModel extends AndroidViewModel {
                                                 observableItems.put(downloaded.getId(), downloaded);
                                                 afterDownloadAction.accept(downloaded);
                                             })
-                                            .addOnFailureListener(e -> {
-                                                Toast.makeText(getApplication(), "ERROR: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                            });
+                                            .addOnFailureListener(e -> Toast.makeText(getApplication(), "ERROR: " + e.getMessage(), Toast.LENGTH_LONG).show());
                                 }
                             }
                         },
@@ -197,6 +206,47 @@ public class MainViewModel extends AndroidViewModel {
                         },
                         error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
         queue.add(userRequest);
+    }
+
+    public void registerLoggedUserInDatabase(String phoneNumber, Consumer<User> afterUserAddedAction) {
+        RequestQueue queue = Volley.newRequestQueue(getApplication());
+        User user = new User();
+        user.setId(getLoggedUser().getUid());
+        user.setName(getLoggedUser().getDisplayName());
+        user.setEmailAddress(getLoggedUser().getEmail());
+        user.setPhoneNumber(phoneNumber);
+        GsonRequest<Table<User>> userRequest = AirtableApiService.getInstance(getApplication())
+                .addNewUser(user,
+                        response -> {
+                            User downloaded = response.getRecords().get(0).getRow();
+                            afterUserAddedAction.accept(downloaded);
+                        },
+                        error -> {
+                            Log.getStackTraceString(error.getCause());
+                            Log.e("LOL", "registerLoggedUserInDatabase: " + Log.getStackTraceString(error.getCause()), error.getCause());
+                            Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                        });
+        queue.add(userRequest);
+    }
+
+    public boolean getLoggedUserInfoIfExisting(Consumer<User> afterDownloadTriedAction) {
+        RequestQueue queue = Volley.newRequestQueue(getApplication());
+        if (!isUserLoggedIn()) {
+            return false;
+        }
+        GsonRequest<Table<User>> userRequest = AirtableApiService.getInstance(getApplication())
+                .requestUser(getLoggedUser().getUid(),
+                        response -> {
+                            if (response.getRecords().isEmpty()) {
+                                afterDownloadTriedAction.accept(null);
+                            } else {
+                                User downloaded = response.getRecords().get(0).getRow();
+                                afterDownloadTriedAction.accept(downloaded);
+                            }
+                        },
+                        error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
+        queue.add(userRequest);
+        return true;
     }
 
     public void downloadCategories() {
