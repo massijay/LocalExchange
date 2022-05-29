@@ -10,9 +10,11 @@ import com.android.volley.Response;
 import com.google.gson.reflect.TypeToken;
 import com.mcris.localexchange.models.entities.Category;
 import com.mcris.localexchange.models.entities.Item;
+import com.mcris.localexchange.models.entities.Record;
 import com.mcris.localexchange.models.entities.Table;
 import com.mcris.localexchange.models.entities.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -108,10 +110,29 @@ public class AirtableApiService {
     public GsonRequest<Table<User>> requestUser(String userId,
                                                 Response.Listener<Table<User>> listener,
                                                 Response.ErrorListener errorListener) {
-        String formula = "ID=\"" + userId + "\"";
+        String formula = "{ID}=\"" + userId + "\"";
 
         return new GsonRequest<>(
                 Request.Method.GET, userBaseQuery + "filterByFormula=" + Uri.encode(formula), headers,
+                new TypeToken<Table<User>>() {
+                }.getType(),
+                listener, errorListener);
+    }
+
+    public GsonRequest<Table<User>> addNewUser(User user,
+                                               Response.Listener<Table<User>> listener,
+                                               Response.ErrorListener errorListener) {
+        Record<User> record = new Record<>();
+        record.setRow(user);
+
+        ArrayList<Record<User>> records = new ArrayList<>(1);
+        records.add(record);
+
+        Table<User> table = new Table<>();
+        table.setRecords(records);
+
+        return new GsonRequest<>(
+                Request.Method.POST, userBaseQuery, headers, table,
                 new TypeToken<Table<User>>() {
                 }.getType(),
                 listener, errorListener);
