@@ -3,22 +3,31 @@ package com.mcris.localexchange.views;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.ObservableMap;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
+import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -29,6 +38,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.maps.android.clustering.ClusterManager;
 import com.mcris.localexchange.R;
 import com.mcris.localexchange.databinding.ActivityMainBinding;
@@ -36,7 +47,9 @@ import com.mcris.localexchange.models.ItemClusterRenderer;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.viewmodels.MainViewModel;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -50,6 +63,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ClusterManager<Item> clusterManager;
     private FusedLocationProviderClient fusedLocationClient;
 
+    // See: https://developer.android.com/training/basics/intents/result
+    private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
+            new FirebaseAuthUIActivityResultContract(),
+            new ActivityResultCallback<FirebaseAuthUIAuthenticationResult>() {
+                @Override
+                public void onActivityResult(FirebaseAuthUIAuthenticationResult result) {
+                    onSignInResult(result);
+                }
+            }
+    );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +85,34 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         sheetBehavior = BottomSheetBehavior.from(bottomMenuLayout);
         ImageView menuHandler = findViewById(R.id.menuHandler);
 
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.GoogleBuilder().build(),
+                new AuthUI.IdpConfig.EmailBuilder().build()
+        );
+        Intent signInIntent = AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .build();
+
+        PopupMenu popupMenu = new PopupMenu(this, binding.moreButton);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.string.add_menu_item) {
+                    mainViewModel.registerLoggedUserInDatabase("+39 3313255987", u -> {
+                        Log.i("LOL", "new user id: " + u.getId());
+                    });
+                } else if (item.getItemId() == R.string.settings_menu_item) {
+                    mainViewModel.getLoggedUserInfoIfExisting(user -> Log.i("SHT", "Logged user: " + (user != null ? user.getName() : "NULL")));
+                } else if (item.getItemId() == R.string.login_menu_item) {
+                    signInLauncher.launch(signInIntent);
+                } else if (item.getItemId() == R.string.logout_menu_name) {
+                    AuthUI.getInstance().signOut(MainActivity.this);
+                }
+                return true;
+            }
+        });
+
         if (savedInstanceState == null) {
             navigateToFragment(ItemsListFragment.class);
         }
@@ -68,6 +120,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         binding.filterButton.setOnClickListener(v -> {
             navigateToFragment(CategoriesSelectionFragment.class);
             setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
+        });
+
+        binding.moreButton.setOnClickListener(v -> {
+            popupMenu.getMenu().clear();
+            popupMenu.getMenu().add(Menu.NONE, R.string.settings_menu_item, 5, R.string.settings_menu_item);
+            if (mainViewModel.isUserLoggedIn()) {
+                popupMenu.getMenu().add(Menu.NONE, R.string.add_menu_item, 2, R.string.add_menu_item);
+                popupMenu.getMenu().add(Menu.NONE, R.string.logout_menu_name, 10, R.string.logout_menu_name);
+            } else {
+                popupMenu.getMenu().add(Menu.NONE, R.string.login_menu_item, 0, R.string.login_menu_item);
+            }
+            popupMenu.show();
         });
 
         menuHandler.setOnClickListener(v -> {
@@ -94,11 +158,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
                                 .RequestMultiplePermissions(), result -> {
-                            // Map.getOrDefault() requires Android API 24
-                            // Boolean fineLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
-                            boolean fineLocationGranted = getOrDefault(result, Manifest.permission.ACCESS_FINE_LOCATION, false);
-                            boolean coarseLocationGranted = getOrDefault(result, Manifest.permission.ACCESS_COARSE_LOCATION, false);
-                            if (fineLocationGranted || coarseLocationGranted) {
+                            Boolean fineLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
+//                            boolean fineLocationGranted = getOrDefault(result, Manifest.permission.ACCESS_FINE_LOCATION, false);
+                            Boolean coarseLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false);
+
+                            if (Boolean.TRUE.equals(fineLocationGranted) || Boolean.TRUE.equals(coarseLocationGranted)) {
                                 Log.d("AAA", "LOCAZIONE CONCESSA");
                                 CancellationTokenSource cts = new CancellationTokenSource();
 
@@ -244,6 +308,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void clearItemsOnMap() {
         clusterManager.clearItems();
         clusterManager.cluster();
+    }
+
+    private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
+        IdpResponse response = result.getIdpResponse();
+        if (result.getResultCode() == RESULT_OK) {
+            // Successfully signed in
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            // ...
+        } else {
+            // Sign in failed. If response is null the user canceled the
+            // sign-in flow using the back button. Otherwise check
+            // response.getError().getErrorCode() and handle the error.
+            // ...
+        }
     }
 
     public <T extends Fragment> void navigateToFragment(Class<T> fragmentClass) {

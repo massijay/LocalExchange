@@ -1,6 +1,10 @@
 <resources>
-    <string name="app_name">Local exchange</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="app_name">Local Exchange</string>
+    <string name="title_activity_main">Local Exchange</string>
     <string name="supply_toggle_button_text">OFFERTA</string>
     <string name="demand_toggle_button_text">DOMANDA</string>
+    <string name="login_menu_item">Login</string>
+    <string name="logout_menu_name">Logout</string>
+    <string name="settings_menu_item">Settings</string>
+    <string name="add_menu_item">Add your item</string>
 </resources>
