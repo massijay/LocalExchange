@@ -38,8 +38,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.maps.android.clustering.ClusterManager;
 import com.mcris.localexchange.R;
 import com.mcris.localexchange.databinding.ActivityMainBinding;
@@ -98,9 +96,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.string.add_menu_item) {
-                    mainViewModel.registerLoggedUserInDatabase("+39 3313255987", u -> {
-                        Log.i("LOL", "new user id: " + u.getId());
-                    });
+                    navigateToFragment(UploadItemFragment.class);
+                    setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
                 } else if (item.getItemId() == R.string.settings_menu_item) {
                     mainViewModel.getLoggedUserInfoIfExisting(user -> Log.i("SHT", "Logged user: " + (user != null ? user.getName() : "NULL")));
                 } else if (item.getItemId() == R.string.login_menu_item) {
@@ -188,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
+        completeSignUpIfNeeded();
         mainViewModel.downloadCategories();
     }
 
@@ -302,14 +300,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
         IdpResponse response = result.getIdpResponse();
         if (result.getResultCode() == RESULT_OK) {
-            // Successfully signed in
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            // ...
-        } else {
-            // Sign in failed. If response is null the user canceled the
-            // sign-in flow using the back button. Otherwise check
-            // response.getError().getErrorCode() and handle the error.
-            // ...
+            completeSignUpIfNeeded();
         }
     }
 
@@ -319,6 +310,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .replace(R.id.bottom_menu_fragment_container, fragmentClass, null)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private void completeSignUpIfNeeded() {
+        mainViewModel.getLoggedUserInfoIfExisting(user -> {
+            if (user == null) {
+                navigateToFragment(FinishSignUpFragment.class);
+                setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+        });
     }
 
     public void setSheetBehaviorState(int state) {

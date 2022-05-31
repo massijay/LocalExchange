@@ -55,7 +55,9 @@ public class ItemDetailsFragment extends Fragment {
                             binding.locationTextView.setText("");
                             e.printStackTrace();
                         }
-                        binding.itemImageView.setImageBitmap(item.getPicture());
+                        if (item.getPicture() != null) {
+                            binding.itemImageView.setImageBitmap(item.getPicture());
+                        }
                         binding.itemDateTextView.setText(getFriendlyDate(item.getDate()));
                         binding.itemNameTextView.setText(item.getName());
                         binding.itemPriceTextView.setText(String.format(Locale.getDefault(),
