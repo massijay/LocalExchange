@@ -18,7 +18,7 @@ import java.util.Map;
 public class GsonRequest<T> extends Request<T> {
     private final Gson gson;
     private final Type type;
-    private final T postPayload;
+    private final T payload;
     private final Map<String, String> headers;
     private final Response.Listener<T> listener;
 
@@ -35,10 +35,10 @@ public class GsonRequest<T> extends Request<T> {
         this.type = type;
         this.headers = headers;
         this.listener = listener;
-        this.postPayload = null;
+        this.payload = null;
     }
 
-    public GsonRequest(int method, String url, Map<String, String> headers, T postPayload, Type type,
+    public GsonRequest(int method, String url, Map<String, String> headers, T payload, Type type,
                        Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);
         this.gson = new GsonBuilder()
@@ -47,7 +47,7 @@ public class GsonRequest<T> extends Request<T> {
         this.type = type;
         this.headers = headers;
         this.listener = listener;
-        this.postPayload = postPayload;
+        this.payload = payload;
     }
 
     @Override
@@ -57,15 +57,15 @@ public class GsonRequest<T> extends Request<T> {
 
     @Override
     public byte[] getBody() throws AuthFailureError {
-        if (getMethod() == Method.POST && postPayload != null) {
-            return gson.toJson(postPayload).getBytes(StandardCharsets.UTF_8);
+        if (payload != null) {
+            return gson.toJson(payload).getBytes(StandardCharsets.UTF_8);
         }
         return super.getBody();
     }
 
     @Override
     public String getBodyContentType() {
-        if (getMethod() == Method.POST) {
+        if (payload != null) {
             return "application/json; charset=" + getParamsEncoding();
         }
         return super.getBodyContentType();
@@ -73,7 +73,7 @@ public class GsonRequest<T> extends Request<T> {
 
     @Override
     protected String getParamsEncoding() {
-        if (getMethod() == Method.POST) {
+        if (payload != null) {
             return StandardCharsets.UTF_8.toString();
         }
         return super.getParamsEncoding();

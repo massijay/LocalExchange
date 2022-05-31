@@ -119,20 +119,41 @@ public class AirtableApiService {
                 listener, errorListener);
     }
 
+    public GsonRequest<Table<Item>> addNewItem(Item item,
+                                               Response.Listener<Table<Item>> listener,
+                                               Response.ErrorListener errorListener) {
+        return new GsonRequest<>(
+                Request.Method.POST, itemsBaseQuery, headers, entityToTable(item),
+                new TypeToken<Table<Item>>() {
+                }.getType(),
+                listener, errorListener);
+    }
+
     public GsonRequest<Table<User>> addNewUser(User user,
                                                Response.Listener<Table<User>> listener,
                                                Response.ErrorListener errorListener) {
-        Record<User> record = new Record<>();
-        record.setRow(user);
-
-        ArrayList<Record<User>> records = new ArrayList<>(1);
-        records.add(record);
-
-        Table<User> table = new Table<>();
-        table.setRecords(records);
-
         return new GsonRequest<>(
-                Request.Method.POST, userBaseQuery, headers, table,
+                Request.Method.POST, userBaseQuery, headers, entityToTable(user),
+                new TypeToken<Table<User>>() {
+                }.getType(),
+                listener, errorListener);
+    }
+
+    public GsonRequest<Table<User>> updateUser(User user,
+                                               Response.Listener<Table<User>> listener,
+                                               Response.ErrorListener errorListener) {
+        return new GsonRequest<>(
+                Request.Method.PATCH, userBaseQuery, headers, entityToTable(user),
+                new TypeToken<Table<User>>() {
+                }.getType(),
+                listener, errorListener);
+    }
+
+    public GsonRequest<Table<User>> overwriteUser(User user,
+                                                  Response.Listener<Table<User>> listener,
+                                                  Response.ErrorListener errorListener) {
+        return new GsonRequest<>(
+                Request.Method.PUT, userBaseQuery, headers, entityToTable(user),
                 new TypeToken<Table<User>>() {
                 }.getType(),
                 listener, errorListener);
@@ -145,6 +166,16 @@ public class AirtableApiService {
                 new TypeToken<Table<Category>>() {
                 }.getType(),
                 listener, errorListener);
+    }
+
+    private <T> Table<T> entityToTable(T entity) {
+        Record<T> record = new Record<>();
+        record.setRow(entity);
+        ArrayList<Record<T>> records = new ArrayList<>(1);
+        records.add(record);
+        Table<T> table = new Table<>();
+        table.setRecords(records);
+        return table;
     }
 
     private <T> Response.Listener<Table<T>> transformListener(Response.Listener<List<T>> listener) {

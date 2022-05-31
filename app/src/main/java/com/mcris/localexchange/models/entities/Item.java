@@ -13,6 +13,7 @@ import com.google.maps.android.clustering.ClusterItem;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,7 +28,7 @@ public class Item implements ClusterItem {
     @Expose
     private Double latitude;
     @SerializedName("ID")
-    @Expose
+    @Expose(serialize = false)
     private String id;
     @SerializedName("Description")
     @Expose
@@ -47,14 +48,17 @@ public class Item implements ClusterItem {
     @SerializedName("Category")
     @Expose
     private List<String> categories;
-    @SerializedName("Owner ID")
+    @SerializedName("Owner")
     @Expose
+    private List<String> ownerRecords;
+    @SerializedName("Owner ID")
+    @Expose(serialize = false)
     private List<String> ownerId;
     @SerializedName("Owner Name")
-    @Expose
+    @Expose(serialize = false)
     private List<String> ownerName;
     @SerializedName("Date Added")
-    @Expose
+    @Expose(serialize = false)
     private String dateString;
 
     private Bitmap thumbnailBitmap;
@@ -113,6 +117,11 @@ public class Item implements ClusterItem {
         return new LatLng(latitude, longitude);
     }
 
+    public void setLatLng(LatLng latLng) {
+        this.latitude = latLng.latitude;
+        this.longitude = latLng.longitude;
+    }
+
     public String getPictureUrl() {
         return pictureUrl;
     }
@@ -137,6 +146,19 @@ public class Item implements ClusterItem {
         this.typology = typology;
     }
 
+    public List<String> getOwnerRecords() {
+        return ownerRecords;
+    }
+
+    public void setOwnerRecords(List<String> ownerRecords) {
+        this.ownerRecords = ownerRecords;
+    }
+
+    public void setOwner(User user) {
+        this.ownerRecords = new ArrayList<>(1);
+        ownerRecords.add(user.getRecordId());
+    }
+
     public List<String> getCategories() {
         return categories;
     }
@@ -147,6 +169,11 @@ public class Item implements ClusterItem {
 
     public void setCategories(List<String> categories) {
         this.categories = categories;
+    }
+
+    public void setCategory(Category category) {
+        this.categories = new ArrayList<>(1);
+        this.categories.add(category.getId());
     }
 
     public String getOwnerId() {

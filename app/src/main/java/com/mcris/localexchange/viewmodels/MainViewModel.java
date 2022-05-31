@@ -16,10 +16,13 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.mcris.localexchange.models.entities.Category;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.models.entities.Record;
@@ -47,6 +50,8 @@ public class MainViewModel extends AndroidViewModel {
     private String searchText;
 
     private Item selectedItem;
+    private User loggedUser;
+
 
     public LatLngBounds getLatLngBounds() {
         return latLngBounds;
@@ -110,12 +115,16 @@ public class MainViewModel extends AndroidViewModel {
         this.selectedItem = selectedItem;
     }
 
-    public FirebaseUser getLoggedUser() {
+    public User getLoggedUser() {
+        return loggedUser;
+    }
+
+    public FirebaseUser getLoggedFirebaseUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
     public boolean isUserLoggedIn() {
-        return getLoggedUser() != null;
+        return getLoggedFirebaseUser() != null;
     }
 
     public MainViewModel(@NonNull Application application) {
@@ -187,6 +196,10 @@ public class MainViewModel extends AndroidViewModel {
                                                 afterDownloadAction.accept(downloaded);
                                             })
                                             .addOnFailureListener(e -> Toast.makeText(getApplication(), "ERROR: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                                } else {
+                                    selectedItem = downloaded;
+                                    observableItems.put(downloaded.getId(), downloaded);
+                                    afterDownloadAction.accept(downloaded);
                                 }
                             }
                         },
@@ -211,9 +224,9 @@ public class MainViewModel extends AndroidViewModel {
     public void registerLoggedUserInDatabase(String phoneNumber, Consumer<User> afterUserAddedAction) {
         RequestQueue queue = Volley.newRequestQueue(getApplication());
         User user = new User();
-        user.setId(getLoggedUser().getUid());
-        user.setName(getLoggedUser().getDisplayName());
-        user.setEmailAddress(getLoggedUser().getEmail());
+        user.setId(getLoggedFirebaseUser().getUid());
+        user.setName(getLoggedFirebaseUser().getDisplayName());
+        user.setEmailAddress(getLoggedFirebaseUser().getEmail());
         user.setPhoneNumber(phoneNumber);
         GsonRequest<Table<User>> userRequest = AirtableApiService.getInstance(getApplication())
                 .addNewUser(user,
@@ -235,12 +248,13 @@ public class MainViewModel extends AndroidViewModel {
             return false;
         }
         GsonRequest<Table<User>> userRequest = AirtableApiService.getInstance(getApplication())
-                .requestUser(getLoggedUser().getUid(),
+                .requestUser(getLoggedFirebaseUser().getUid(),
                         response -> {
                             if (response.getRecords().isEmpty()) {
                                 afterDownloadTriedAction.accept(null);
                             } else {
                                 User downloaded = response.getRecords().get(0).getRow();
+                                loggedUser = downloaded;
                                 afterDownloadTriedAction.accept(downloaded);
                             }
                         },
@@ -261,6 +275,30 @@ public class MainViewModel extends AndroidViewModel {
                         },
                         error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
         queue.add(categoryTableRequest);
+    }
+
+    public void uploadItem(Item item, Consumer<Item> afterUploadAction) {
+        RequestQueue queue = Volley.newRequestQueue(getApplication());
+        GsonRequest<Table<Item>> itemUploadRequest = AirtableApiService.getInstance(getApplication())
+                .addNewItem(item,
+                        response -> {
+                            Item downloaded = response.getRecords().get(0).getRow();
+                            afterUploadAction.accept(downloaded);
+                        },
+                        error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
+
+        queue.add(itemUploadRequest);
+    }
+
+    public void uploadToFirebaseStorage(String filename, byte[] data,
+                                        OnSuccessListener<UploadTask.TaskSnapshot> listener,
+                                        OnFailureListener failureListener) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        StorageReference ref = storage.getReference().child("images/" + filename);
+        ref.putBytes(data)
+                .addOnSuccessListener(listener)
+                .addOnFailureListener(failureListener);
     }
 
 }

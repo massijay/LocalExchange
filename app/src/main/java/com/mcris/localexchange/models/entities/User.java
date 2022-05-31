@@ -23,6 +23,9 @@ public class User {
     @SerializedName("Register Date")
     @Expose(serialize = false)
     private String signUpDateString;
+    @SerializedName("Record ID")
+    @Expose(serialize = false)
+    private String recordId;
 
     public String getName() {
         return name;
@@ -58,6 +61,14 @@ public class User {
 
     public String getSignUpDateString() {
         return signUpDateString;
+    }
+
+    public String getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(String recordId) {
+        this.recordId = recordId;
     }
 
     public LocalDate getDate() {
