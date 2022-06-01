@@ -22,8 +22,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.mcris.localexchange.BuildConfig;
 import com.mcris.localexchange.databinding.FragmentUploadItemBinding;
+import com.mcris.localexchange.helpers.Utils;
 import com.mcris.localexchange.models.entities.Category;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.viewmodels.MainViewModel;
@@ -94,9 +96,7 @@ public class UploadItemFragment extends Fragment {
             }
         });
 
-        binding.galleryButton.setOnClickListener(v -> {
-            selectImageFromGalleryResult.launch("image/*");
-        });
+        binding.galleryButton.setOnClickListener(v -> selectImageFromGalleryResult.launch("image/*"));
 
         binding.uploadItemButton.setOnClickListener(v -> {
             startLoadingIndicator();
@@ -160,7 +160,14 @@ public class UploadItemFragment extends Fragment {
             item.setCategory(category);
             item.setOwner(mainViewModel.getLoggedUser());
             //noinspection ConstantConditions
-            item.setLatLng(mainViewModel.getUserLocation().getValue());
+            if (true) {
+                LatLng ne = new LatLng(45.705438, 13.827449);
+                LatLng sw = new LatLng(45.598643, 13.753635);
+                LatLngBounds bounds = new LatLngBounds(sw, ne);
+                item.setLatLng(Utils.getRandomLocationInsideBounds(bounds));
+            } else {
+                item.setLatLng(mainViewModel.getUserLocation().getValue());
+            }
             return item;
         } catch (NumberFormatException e) {
             stopLoadingIndicator();
