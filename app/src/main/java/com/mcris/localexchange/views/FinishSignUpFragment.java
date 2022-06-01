@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mcris.localexchange.databinding.FragmentFinishSignUpBinding;
 import com.mcris.localexchange.viewmodels.MainViewModel;
 
@@ -40,8 +39,7 @@ public class FinishSignUpFragment extends Fragment {
                         user -> {
                             MainActivity mainActivity = (MainActivity) getActivity();
                             if (mainActivity != null) {
-                                mainActivity.setSheetBehaviorState(BottomSheetBehavior.STATE_COLLAPSED);
-                                mainActivity.onBackPressed();
+                                mainActivity.goBackToRootFragment();
                             }
                         }));
     }

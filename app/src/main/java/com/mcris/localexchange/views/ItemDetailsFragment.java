@@ -19,7 +19,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mcris.localexchange.databinding.FragmentItemDetailsBinding;
 import com.mcris.localexchange.viewmodels.MainViewModel;
 
@@ -93,7 +92,7 @@ public class ItemDetailsFragment extends Fragment {
                             if (getActivity() != null && getActivity() instanceof MainActivity) {
                                 MainActivity mainActivity = (MainActivity) getActivity();
                                 mainActivity.navigateToFragment(UserInfoFragment.class);
-                                mainActivity.setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
+                                mainActivity.expandBottomSheet();
                             }
                         });
                         binding.loadingIndicator.setVisibility(View.GONE);

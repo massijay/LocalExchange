@@ -22,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.databinding.ObservableMap;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.firebase.ui.auth.AuthUI;
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private GoogleMap mMap;
     private BottomSheetBehavior<LinearLayout> sheetBehavior;
+    private int sheetStateBeforeLastNavigation = BottomSheetBehavior.STATE_COLLAPSED;
 
     private ClusterManager<Item> clusterManager;
     private FusedLocationProviderClient fusedLocationClient;
@@ -97,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.string.add_menu_item) {
                     navigateToFragment(UploadItemFragment.class);
-                    setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
+                    expandBottomSheet();
                 } else if (item.getItemId() == R.string.settings_menu_item) {
                     mainViewModel.getLoggedUserInfoIfExisting(user -> Log.i("SHT", "Logged user: " + (user != null ? user.getName() : "NULL")));
                 } else if (item.getItemId() == R.string.login_menu_item) {
@@ -110,12 +113,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
         if (savedInstanceState == null) {
-            navigateToFragment(ItemsListFragment.class);
+            navigateToFragment(ItemsListFragment.class, true);
         }
 
         binding.filterButton.setOnClickListener(v -> {
             navigateToFragment(CategoriesSelectionFragment.class);
-            setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
+            expandBottomSheet();
         });
 
         binding.moreButton.setOnClickListener(v -> {
@@ -132,9 +135,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         menuHandler.setOnClickListener(v -> {
             if (sheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                setSheetBehaviorState(BottomSheetBehavior.STATE_COLLAPSED);
+                collapseBottomSheet();
             } else {
-                setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
+                expandBottomSheet();
             }
         });
         sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -210,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mainViewModel.setTypeOfSearch(Item.Typology.SELL);
                 mainViewModel.getObservableItems().clear();
                 obtainItems();
-                setSheetBehaviorState(BottomSheetBehavior.STATE_COLLAPSED);
+                goBackToRootFragment();
             }
         });
         binding.demandToggleButton.addOnCheckedChangeListener((button, isChecked) -> {
@@ -218,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mainViewModel.setTypeOfSearch(Item.Typology.BUY);
                 mainViewModel.getObservableItems().clear();
                 obtainItems();
-                setSheetBehaviorState(BottomSheetBehavior.STATE_COLLAPSED);
+                goBackToRootFragment();
             }
         });
 
@@ -237,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             focusItemOnMap(item);
             mainViewModel.setSelectedItem(item);
             navigateToFragment(ItemDetailsFragment.class);
-            setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
+            expandBottomSheet();
             return true;
         });
 
@@ -305,36 +308,56 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public <T extends Fragment> void navigateToFragment(Class<T> fragmentClass) {
-        getSupportFragmentManager().beginTransaction()
+        navigateToFragment(fragmentClass, false);
+    }
+
+    public void goBackToRootFragment() {
+        sheetStateBeforeLastNavigation = BottomSheetBehavior.STATE_COLLAPSED;
+        collapseBottomSheet();
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            FragmentManager.BackStackEntry entry = getSupportFragmentManager().getBackStackEntryAt(0);
+            getSupportFragmentManager().popBackStackImmediate(entry.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+    }
+
+    public <T extends Fragment> void navigateToFragment(Class<T> fragmentClass, boolean isRoot) {
+        sheetStateBeforeLastNavigation = sheetBehavior.getState();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)
-                .replace(R.id.bottom_menu_fragment_container, fragmentClass, null)
-                .addToBackStack(null)
-                .commit();
+                .replace(R.id.bottom_menu_fragment_container, fragmentClass, null);
+        if (!isRoot) {
+            transaction = transaction.addToBackStack(null);
+        }
+        transaction.commit();
     }
 
     private void completeSignUpIfNeeded() {
         mainViewModel.getLoggedUserInfoIfExisting(user -> {
             if (user == null) {
                 navigateToFragment(FinishSignUpFragment.class);
-                setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
+                expandBottomSheet();
             }
         });
     }
 
-    public void setSheetBehaviorState(int state) {
+    private void setSheetBehaviorState(int state) {
         sheetBehavior.setState(state);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i("AAA", "DESTROY MainActivity");
+    public void collapseBottomSheet() {
+        setSheetBehaviorState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    public void expandBottomSheet() {
+        setSheetBehaviorState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        Log.i("AAA", "STOP MainActivity");
+    public void onBackPressed() {
+        if (sheetBehavior != null) {
+            setSheetBehaviorState(sheetStateBeforeLastNavigation);
+        }
+        super.onBackPressed();
     }
 
     public void hideSoftKeyboard(View v) {

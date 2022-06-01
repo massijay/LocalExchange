@@ -21,9 +21,7 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.UploadTask;
+import com.google.android.gms.maps.model.LatLng;
 import com.mcris.localexchange.BuildConfig;
 import com.mcris.localexchange.databinding.FragmentUploadItemBinding;
 import com.mcris.localexchange.models.entities.Category;
@@ -35,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.function.Consumer;
 
 public class UploadItemFragment extends Fragment {
 
@@ -42,6 +41,7 @@ public class UploadItemFragment extends Fragment {
     private MainViewModel mainViewModel;
 
     private Uri currentImageUri = null;
+    private String currentImageFileName = null;
 
     private final ActivityResultLauncher<Uri> takePictureResult =
             registerForActivityResult(new ActivityResultContracts.TakePicture(), isSuccess -> {
@@ -54,6 +54,7 @@ public class UploadItemFragment extends Fragment {
             registerForActivityResult(new ActivityResultContracts.GetContent(), imgUri -> {
                 if (imgUri != null) {
                     currentImageUri = imgUri;
+                    currentImageFileName = getImageFilenameWithoutExt();
                     binding.photoImageView.setImageBitmap(getCompressedImage(imgUri));
                 }
             });
@@ -77,12 +78,11 @@ public class UploadItemFragment extends Fragment {
         binding.categoriesSpinner.setSelection(0);
 
         binding.cameraButton.setOnClickListener(v -> {
-            String timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-            String imageFileName = "JPEG_" + timeStamp + "_";
+            currentImageFileName = getImageFilenameWithoutExt();
             @SuppressWarnings("ConstantConditions")
             File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             try {
-                File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+                File image = File.createTempFile(currentImageFileName + "_", ".jpg", storageDir);
                 currentImageUri = FileProvider.getUriForFile(
                         getActivity(),
                         BuildConfig.APPLICATION_ID + ".fileprovider",
@@ -99,35 +99,49 @@ public class UploadItemFragment extends Fragment {
         });
 
         binding.uploadItemButton.setOnClickListener(v -> {
+            startLoadingIndicator();
             Item item = createItem();
             if (item != null) {
                 if (currentImageUri != null) {
-                    String fname = currentImageUri.getLastPathSegment();
-                    Log.i("SHT", "getLastPathSegment: " + fname);
-                    mainViewModel.uploadToFirebaseStorage(fname,
-                            getCompressedImageByteArray(currentImageUri),
-                            new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                    String p = taskSnapshot.getMetadata().getPath();
-                                }
-                            },
-                            new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    //TODO: PROBLEMI DI PERMESSI
-                                    Log.e("SHT", "onFailure: ", e);
-                                }
-                            });
+                    ImageAndThumbnail imgthmb = new ImageAndThumbnail();
+                    imgthmb.upload(getCompressedImageByteArray(currentImageUri), true,
+                            () -> imgthmb.upload(getThumbnailByteArray(currentImageUri), false,
+                                    () -> {
+                                        String imgurl = imgthmb.imageUrl.toString();
+                                        String thmburl = imgthmb.thumbnailUrl.toString();
+                                        item.setPictureUrl(imgurl);
+                                        item.setThumbnailUrl(thmburl);
+                                        uploadItem(item);
+                                    },
+                                    this::handleUploadError),
+                            this::handleUploadError);
+
                 } else {
-                    mainViewModel.uploadItem(item, i -> {
-                        Log.i("SHT", "uploadItem: " + i.getName());
-                    });
+                    uploadItem(item);
                 }
             }
         });
 
         return binding.getRoot();
+    }
+
+    @NonNull
+    private String getImageFilenameWithoutExt() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+    }
+
+    private void startLoadingIndicator() {
+        //noinspection ConstantConditions
+        getActivity().runOnUiThread(() -> binding.uploadingIndicator.setVisibility(View.VISIBLE));
+    }
+
+    private void stopLoadingIndicator() {
+        //noinspection ConstantConditions
+        getActivity().runOnUiThread(() -> binding.uploadingIndicator.setVisibility(View.GONE));
+    }
+
+    private void handleUploadError(Exception e) {
+        stopLoadingIndicator();
     }
 
     private Item createItem() {
@@ -149,10 +163,28 @@ public class UploadItemFragment extends Fragment {
             item.setLatLng(mainViewModel.getUserLocation().getValue());
             return item;
         } catch (NumberFormatException e) {
+            stopLoadingIndicator();
             binding.priceEditText.setText("");
             Toast.makeText(getActivity(), "Formato prezzo non corretto", Toast.LENGTH_SHORT).show();
             return null;
         }
+    }
+
+    private void uploadItem(Item item) {
+        mainViewModel.uploadItem(item, i -> {
+            Log.i("SHT", "uploadItem: " + i.getName());
+            stopLoadingIndicator();
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if (mainActivity != null) {
+                LatLng userLocation = mainViewModel.getUserLocation().getValue();
+                if (item.getLatLng().equals(userLocation)) {
+                    mainViewModel.downloadItems();
+                } else {
+                    mainActivity.focusItemOnMap(item);
+                }
+                mainActivity.goBackToRootFragment();
+            }
+        });
     }
 
     private Bitmap getCompressedImage(Uri uri) {
@@ -210,6 +242,33 @@ public class UploadItemFragment extends Fragment {
             return data;
         } catch (IOException e) {
             return null;
+        }
+    }
+
+    private class ImageAndThumbnail {
+        private Uri imageUrl = null;
+        private Uri thumbnailUrl = null;
+
+        private void upload(byte[] data, boolean isMainImage, Runnable onSuccess, Consumer<Exception> onFailure) {
+            String imgName = currentImageFileName;
+            if (!isMainImage) {
+                imgName += "_thumbnail";
+            }
+            imgName += ".jpg";
+            mainViewModel.uploadToFirebaseStorage(imgName,
+                    data,
+                    taskSnapshot -> taskSnapshot.getStorage()
+                            .getDownloadUrl()
+                            .addOnSuccessListener(uri -> {
+                                if (isMainImage) {
+                                    imageUrl = uri;
+                                } else {
+                                    thumbnailUrl = uri;
+                                }
+                                onSuccess.run();
+                            })
+                            .addOnFailureListener(e -> onFailure.accept(e)),
+                    e -> onFailure.accept(e));
         }
     }
 }

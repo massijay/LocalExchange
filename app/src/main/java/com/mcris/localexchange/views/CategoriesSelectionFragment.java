@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mcris.localexchange.databinding.FragmentCategoriesSelectionBinding;
 import com.mcris.localexchange.models.CategoriesAdapter;
 import com.mcris.localexchange.models.ClickableAdapterListener;
@@ -94,7 +93,7 @@ public class CategoriesSelectionFragment extends Fragment {
             mainViewModel.downloadItems();
         }
         if (getActivity() instanceof MainActivity) {
-            ((MainActivity) getActivity()).setSheetBehaviorState(BottomSheetBehavior.STATE_COLLAPSED);
+            ((MainActivity) getActivity()).collapseBottomSheet();
         }
     }
 }
