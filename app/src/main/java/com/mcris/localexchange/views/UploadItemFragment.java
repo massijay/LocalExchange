@@ -40,6 +40,8 @@ import java.util.function.Consumer;
 
 public class UploadItemFragment extends Fragment {
 
+    private static final boolean USE_FAKE_COORDINATES = false;
+
     private FragmentUploadItemBinding binding;
     private MainViewModel mainViewModel;
 
@@ -160,13 +162,13 @@ public class UploadItemFragment extends Fragment {
             Category category = (Category) binding.categoriesSpinner.getSelectedItem();
             item.setCategory(category);
             item.setOwner(mainViewModel.getLoggedUser());
-            //noinspection ConstantConditions
-            if (true) {
+            if (USE_FAKE_COORDINATES) {
                 LatLng ne = new LatLng(45.705438, 13.827449);
                 LatLng sw = new LatLng(45.598643, 13.753635);
                 LatLngBounds bounds = new LatLngBounds(sw, ne);
                 item.setLatLng(Utils.getRandomLocationInsideBounds(bounds));
             } else {
+                //noinspection ConstantConditions
                 item.setLatLng(mainViewModel.getUserLocation().getValue());
             }
             return item;
