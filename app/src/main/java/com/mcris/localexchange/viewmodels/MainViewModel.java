@@ -159,8 +159,7 @@ public class MainViewModel extends AndroidViewModel {
                                                     item.setThumbnailBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
                                                     observableItems.putIfAbsent(item.getId(), item);
                                                 })
-                                                .addOnFailureListener(e -> {
-                                                });
+                                                .addOnFailureListener(e -> Log.e("SHT", "download thumbnail failure: ", e));
                                     }
                                 }
                             }

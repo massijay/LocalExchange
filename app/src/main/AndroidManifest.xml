@@ -18,10 +18,9 @@
             android:name=".views.SecondActivity"
             android:exported="false" />
 
-        <!--TODO: Remove hardcoded API KEY-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDtUU33OaFKEl1C721gVFU0ixpaK8--Vw0" />
+            android:value="@string/maps_api_key" />
 
         <activity
             android:name=".views.MainActivity"

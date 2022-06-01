@@ -8,6 +8,7 @@ import android.net.Uri;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.google.gson.reflect.TypeToken;
+import com.mcris.localexchange.R;
 import com.mcris.localexchange.models.entities.Category;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.models.entities.Record;
@@ -30,7 +31,6 @@ public class AirtableApiService {
 
     private AirtableApiService() {
         headers = new HashMap<>();
-        headers.put("Authorization", "Bearer " + API_KEY);
     }
 
     public static AirtableApiService getInstance(Context context) {
@@ -43,11 +43,12 @@ public class AirtableApiService {
         // since the activity, not losing all references, would survive for the entire
         // application life
         instance.appContext = context.getApplicationContext();
+        instance.API_KEY = instance.appContext.getString(R.string.airtable_api_key);
+        instance.headers.put("Authorization", "Bearer " + instance.API_KEY);
         return instance;
     }
 
-    // TODO: Remove hardcoded API KEY (?)
-    private final String API_KEY = "keyKTETfgRQ5SHHLK";
+    private String API_KEY;
     private final String apiUrl = "https://api.airtable.com/v0/";
     private final String baseId = "appT9OoAOwKHPXfYX";
     private final String baseUrl = apiUrl + baseId + "/";
