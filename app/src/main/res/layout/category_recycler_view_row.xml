@@ -13,7 +13,7 @@
         android:textAppearance="?attr/textAppearanceListItem"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="aaaa" />
+        tools:text="name" />
 
     <TextView
         android:id="@+id/categoryShortDescrTextView"
@@ -24,7 +24,7 @@
         android:textAppearance="?attr/textAppearanceListItemSecondary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/categoryNameTextView"
-        tools:text="bbbbb" />
+        tools:text="short description" />
 
     <RadioButton
         android:id="@+id/categoryRowRadioButton"

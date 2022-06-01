@@ -1,4 +1,4 @@
-package com.mcris.localexchange.services;
+package com.mcris.localexchange.models;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -22,12 +22,6 @@ public class GsonRequest<T> extends Request<T> {
     private final Map<String, String> headers;
     private final Response.Listener<T> listener;
 
-    /**
-     * Make a GET request and return a parsed object from JSON.
-     *
-     * @param url     URL of the request to make
-     * @param headers Map of request headers
-     */
     public GsonRequest(int method, String url, Map<String, String> headers, Type type,
                        Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);

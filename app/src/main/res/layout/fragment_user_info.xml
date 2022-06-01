@@ -21,17 +21,18 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Ajeje Brazorf"
                 android:textAppearance="?attr/textAppearanceHeadline5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Ajeje Brazorf" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/sendMailButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="5dp"
+                android:contentDescription="@string/send_mail_alt_text"
                 android:src="@drawable/ic_round_email_24"
                 app:backgroundTint="@color/blue_gmaps"
                 app:layout_constraintStart_toStartOf="parent"
@@ -44,18 +45,19 @@
                 android:layout_height="0dp"
                 android:layout_marginStart="10dp"
                 android:gravity="center_vertical"
-                android:text="mail@example.com"
                 android:textAppearance="?attr/textAppearanceBody1"
                 app:layout_constraintBottom_toBottomOf="@id/sendMailButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/sendMailButton"
-                app:layout_constraintTop_toTopOf="@id/sendMailButton" />
+                app:layout_constraintTop_toTopOf="@id/sendMailButton"
+                tools:text="mail@example.com" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/sendSmsButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="5dp"
+                android:contentDescription="@string/send_sms_alt_text"
                 android:src="@drawable/ic_round_chat_24"
                 app:backgroundTint="@color/blue_gmaps"
                 app:layout_constraintStart_toStartOf="@id/sendMailButton"
@@ -68,18 +70,19 @@
                 android:layout_height="0dp"
                 android:layout_marginStart="10dp"
                 android:gravity="center_vertical"
-                android:text="SMS +393367854281"
                 android:textAppearance="?attr/textAppearanceBody1"
                 app:layout_constraintBottom_toBottomOf="@id/sendSmsButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/sendSmsButton"
-                app:layout_constraintTop_toTopOf="@id/sendSmsButton" />
+                app:layout_constraintTop_toTopOf="@id/sendSmsButton"
+                tools:text="SMS +393367854281" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/callButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="5dp"
+                android:contentDescription="@string/call"
                 android:src="@drawable/ic_round_call_24"
                 app:backgroundTint="@color/blue_gmaps"
                 app:layout_constraintStart_toStartOf="@id/sendMailButton"
@@ -92,18 +95,19 @@
                 android:layout_height="0dp"
                 android:layout_marginStart="10dp"
                 android:gravity="center_vertical"
-                android:text="Chiama +393367854281"
                 android:textAppearance="?attr/textAppearanceBody1"
                 app:layout_constraintBottom_toBottomOf="@id/callButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/callButton"
-                app:layout_constraintTop_toTopOf="@id/callButton" />
+                app:layout_constraintTop_toTopOf="@id/callButton"
+                tools:text="Chiama +393367854281" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/addContactButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="5dp"
+                android:contentDescription="@string/add_contact_label"
                 android:src="@drawable/ic_round_person_add_24"
                 app:backgroundTint="@color/blue_gmaps"
                 app:layout_constraintStart_toStartOf="@id/sendMailButton"
@@ -116,7 +120,7 @@
                 android:layout_height="0dp"
                 android:layout_marginStart="10dp"
                 android:gravity="center_vertical"
-                android:text="Aggiungi ai contatti"
+                android:text="@string/add_contact_label"
                 android:textAppearance="?attr/textAppearanceBody1"
                 app:layout_constraintBottom_toBottomOf="@id/addContactButton"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -128,7 +132,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="Registrato dal:"
+                android:text="@string/registered_since_label"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/addContactButton" />
 
@@ -136,10 +140,10 @@
                 android:id="@+id/signUpDateTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="5 aprile"
                 android:textAppearance="?attr/textAppearanceBody2"
                 app:layout_constraintStart_toStartOf="@id/registeredFromLabel"
-                app:layout_constraintTop_toBottomOf="@id/registeredFromLabel" />
+                app:layout_constraintTop_toBottomOf="@id/registeredFromLabel"
+                tools:text="5 aprile" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
@@ -150,6 +154,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminate="true" />
-
 
 </FrameLayout>

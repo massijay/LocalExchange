@@ -9,6 +9,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.google.gson.reflect.TypeToken;
 import com.mcris.localexchange.R;
+import com.mcris.localexchange.models.GsonRequest;
 import com.mcris.localexchange.models.entities.Category;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.models.entities.Record;
@@ -17,8 +18,6 @@ import com.mcris.localexchange.models.entities.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class AirtableApiService {
     // It's safe (not a memory leak) to save context in a static field as long it is
@@ -177,13 +176,5 @@ public class AirtableApiService {
         Table<T> table = new Table<>();
         table.setRecords(records);
         return table;
-    }
-
-    private <T> Response.Listener<Table<T>> transformListener(Response.Listener<List<T>> listener) {
-        return response -> listener.onResponse(
-                response.getRecords()
-                        .stream()
-                        .map(r -> r.getRow())
-                        .collect(Collectors.toList()));
     }
 }

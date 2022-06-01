@@ -23,13 +23,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.mcris.localexchange.models.GsonRequest;
 import com.mcris.localexchange.models.entities.Category;
 import com.mcris.localexchange.models.entities.Item;
 import com.mcris.localexchange.models.entities.Record;
 import com.mcris.localexchange.models.entities.Table;
 import com.mcris.localexchange.models.entities.User;
 import com.mcris.localexchange.services.AirtableApiService;
-import com.mcris.localexchange.services.GsonRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +51,8 @@ public class MainViewModel extends AndroidViewModel {
 
     private Item selectedItem;
     private User loggedUser;
+
+    public static final String TAG = "LEA";
 
 
     public LatLngBounds getLatLngBounds() {
@@ -159,12 +161,15 @@ public class MainViewModel extends AndroidViewModel {
                                                     item.setThumbnailBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
                                                     observableItems.putIfAbsent(item.getId(), item);
                                                 })
-                                                .addOnFailureListener(e -> Log.e("SHT", "download thumbnail failure: ", e));
+                                                .addOnFailureListener(e -> Log.e(TAG, "Download thumbnail failure: ", e));
                                     }
                                 }
                             }
                         },
-                        error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
+                        error -> {
+                            Toast.makeText(getApplication(), "Error downloading items", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error downloading items: ", error);
+                        });
         queue.add(itemTableRequest);
     }
 
@@ -194,7 +199,7 @@ public class MainViewModel extends AndroidViewModel {
                                                 observableItems.put(downloaded.getId(), downloaded);
                                                 afterDownloadAction.accept(downloaded);
                                             })
-                                            .addOnFailureListener(e -> Toast.makeText(getApplication(), "ERROR: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                                            .addOnFailureListener(e -> Log.e(TAG, "Download picture failure: ", e));
                                 } else {
                                     selectedItem = downloaded;
                                     observableItems.put(downloaded.getId(), downloaded);
@@ -202,7 +207,10 @@ public class MainViewModel extends AndroidViewModel {
                                 }
                             }
                         },
-                        error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
+                        error -> {
+                            Toast.makeText(getApplication(), "Error downloading selected item", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error downloading selected item: ", error);
+                        });
         queue.add(itemRequest);
     }
 
@@ -216,7 +224,10 @@ public class MainViewModel extends AndroidViewModel {
                                 afterDownloadAction.accept(downloaded);
                             }
                         },
-                        error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
+                        error -> {
+                            Toast.makeText(getApplication(), "Error downloading user info", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error downloading user info: ", error);
+                        });
         queue.add(userRequest);
     }
 
@@ -234,9 +245,8 @@ public class MainViewModel extends AndroidViewModel {
                             afterUserAddedAction.accept(downloaded);
                         },
                         error -> {
-                            Log.getStackTraceString(error.getCause());
-                            Log.e("LOL", "registerLoggedUserInDatabase: " + Log.getStackTraceString(error.getCause()), error.getCause());
-                            Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplication(), "Error uploading user info in the database", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error uploading user info in the database: ", error);
                         });
         queue.add(userRequest);
     }
@@ -257,7 +267,10 @@ public class MainViewModel extends AndroidViewModel {
                                 afterDownloadTriedAction.accept(downloaded);
                             }
                         },
-                        error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
+                        error -> {
+                            Toast.makeText(getApplication(), "Error getting user info", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error getting user info: ", error);
+                        });
         queue.add(userRequest);
         return true;
     }
@@ -272,7 +285,10 @@ public class MainViewModel extends AndroidViewModel {
                                 allCategories.put(record.getRow().getId(), record.getRow());
                             }
                         },
-                        error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
+                        error -> {
+                            Toast.makeText(getApplication(), "Error downloading categories", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error downloading categories: ", error);
+                        });
         queue.add(categoryTableRequest);
     }
 
@@ -284,7 +300,10 @@ public class MainViewModel extends AndroidViewModel {
                             Item downloaded = response.getRecords().get(0).getRow();
                             afterUploadAction.accept(downloaded);
                         },
-                        error -> Toast.makeText(getApplication(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show());
+                        error -> {
+                            Toast.makeText(getApplication(), "Error uploading announce", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error uploading item: ", error);
+                        });
 
         queue.add(itemUploadRequest);
     }

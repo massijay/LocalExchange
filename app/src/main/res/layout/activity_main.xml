@@ -57,7 +57,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
-        android:contentDescription="Find"
+        android:contentDescription="@string/find_alt_text"
         android:src="@drawable/ic_outline_search_24"
         app:backgroundTint="@color/blue_gmaps"
         app:fabSize="mini"
@@ -70,13 +70,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
-        android:contentDescription="More options"
+        android:contentDescription="@string/more_alt_text"
         android:src="@drawable/ic_round_more_vert_24"
         app:backgroundTint="@color/blue_gmaps"
         app:fabSize="mini"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="?attr/colorSurface" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

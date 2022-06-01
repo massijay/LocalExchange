@@ -1,12 +1,10 @@
 package com.mcris.localexchange.views;
 
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.mcris.localexchange.databinding.FragmentCategoriesSelectionBinding;
 import com.mcris.localexchange.models.CategoriesAdapter;
-import com.mcris.localexchange.models.ClickableAdapterListener;
 import com.mcris.localexchange.models.entities.Category;
 import com.mcris.localexchange.viewmodels.MainViewModel;
 
@@ -49,34 +46,24 @@ public class CategoriesSelectionFragment extends Fragment {
 
         List<Category> categories = mainViewModel.getAllCategories();
         categoriesAdapter = new CategoriesAdapter(categories);
-        categoriesAdapter.setOnClickListener(new ClickableAdapterListener<Category>() {
-            @Override
-            public void onListItemClick(Category item, int position) {
-
-            }
+        categoriesAdapter.setOnClickListener((item, position) -> {
         });
 
-        binding.searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    search();
-                    v.clearFocus();
-                    if (getActivity() instanceof MainActivity) {
-                        ((MainActivity) getActivity()).hideSoftKeyboard(v);
-                    }
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        binding.searchItemsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.searchEditText.clearFocus();
+        binding.searchEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 search();
+                v.clearFocus();
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).hideSoftKeyboard(v);
+                }
+                return true;
             }
+            return false;
+        });
+
+        binding.searchItemsButton.setOnClickListener(v -> {
+            binding.searchEditText.clearFocus();
+            search();
         });
         binding.categoriesRecyclerView.setHasFixedSize(true);
         binding.categoriesRecyclerView.setAdapter(categoriesAdapter);

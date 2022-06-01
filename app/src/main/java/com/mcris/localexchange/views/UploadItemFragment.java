@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.mcris.localexchange.BuildConfig;
+import com.mcris.localexchange.R;
 import com.mcris.localexchange.databinding.FragmentUploadItemBinding;
 import com.mcris.localexchange.helpers.Utils;
 import com.mcris.localexchange.models.entities.Category;
@@ -92,7 +93,7 @@ public class UploadItemFragment extends Fragment {
                 takePictureResult.launch(currentImageUri);
                 image.deleteOnExit();
             } catch (IOException e) {
-                Log.e("SHT", "takePictureResult.launch: ", e);
+                Log.e(MainViewModel.TAG, "takePictureResult.launch: ", e);
             }
         });
 
@@ -148,7 +149,7 @@ public class UploadItemFragment extends Fragment {
         try {
             Item item = new Item();
             item.setName(binding.nameEditText.getText().toString());
-            item.setPrice(Double.parseDouble(binding.priceEditText.getText().toString()));
+            item.setPrice(Double.parseDouble(binding.priceEditText.getText().toString().replace(',', '.')));
             int checkedButtonId = binding.typologyButtonGroup.getCheckedButtonId();
             if (checkedButtonId == binding.demandButton.getId()) {
                 item.setTypology(Item.Typology.BUY);
@@ -172,23 +173,19 @@ public class UploadItemFragment extends Fragment {
         } catch (NumberFormatException e) {
             stopLoadingIndicator();
             binding.priceEditText.setText("");
-            Toast.makeText(getActivity(), "Formato prezzo non corretto", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.wrong_price_format, Toast.LENGTH_SHORT).show();
             return null;
         }
     }
 
     private void uploadItem(Item item) {
         mainViewModel.uploadItem(item, i -> {
-            Log.i("SHT", "uploadItem: " + i.getName());
+            Log.d(MainViewModel.TAG, "uploadItem: " + i.getName());
             stopLoadingIndicator();
             MainActivity mainActivity = (MainActivity) getActivity();
             if (mainActivity != null) {
-                LatLng userLocation = mainViewModel.getUserLocation().getValue();
-                if (item.getLatLng().equals(userLocation)) {
-                    mainViewModel.downloadItems();
-                } else {
-                    mainActivity.focusItemOnMap(item);
-                }
+                mainActivity.selectSearchTypology(item.getTypology());
+                mainActivity.focusItemOnMap(item);
                 mainActivity.goBackToRootFragment();
             }
         });
@@ -245,7 +242,7 @@ public class UploadItemFragment extends Fragment {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bmp.compress(Bitmap.CompressFormat.JPEG, jpegQuality, baos);
             byte[] data = baos.toByteArray();
-            Log.i("SHT", "img size KB: " + (data.length / 1024));
+            Log.d(MainViewModel.TAG, "img size KB: " + (data.length / 1024));
             return data;
         } catch (IOException e) {
             return null;

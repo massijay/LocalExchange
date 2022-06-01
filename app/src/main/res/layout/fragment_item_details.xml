@@ -30,6 +30,7 @@
                 android:layout_marginBottom="5dp"
                 android:adjustViewBounds="true"
                 android:maxHeight="350dp"
+                tools:ignore="ContentDescription"
                 tools:src="@drawable/test_product" />
 
             <TextView
@@ -44,8 +45,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
-                tools:text="Name\ntwo lines"
-                android:textAppearance="?attr/textAppearanceHeadline5" />
+                android:textAppearance="?attr/textAppearanceHeadline5"
+                tools:text="Name\ntwo lines" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -58,9 +59,9 @@
                     android:id="@+id/itemPriceTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="39 €"
                     android:textAppearance="?attr/textAppearanceHeadline6"
-                    android:textColor="@color/purple_500" />
+                    android:textColor="@color/purple_500"
+                    tools:text="39 €" />
 
                 <TextView
                     android:id="@+id/itemTypeTextView"
@@ -70,9 +71,9 @@
                     android:background="@drawable/rounded_rectangle"
                     android:backgroundTint="@color/purple_500"
                     android:paddingHorizontal="5dp"
-                    tools:text="buy"
                     android:textAppearance="?attr/textAppearanceHeadline6"
-                    android:textColor="?attr/colorSurface" />
+                    android:textColor="?attr/colorSurface"
+                    tools:text="buy" />
             </LinearLayout>
 
             <LinearLayout
@@ -87,26 +88,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_round_location_on_24"
-                    app:tint="?attr/colorOnSurface" />
+                    app:tint="?attr/colorOnSurface"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
                     android:id="@+id/locationTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginHorizontal="5dp"
+                    android:layout_weight="1"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    tools:text="Trieste"
-                    android:textAppearance="?attr/textAppearanceBody1" />
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    tools:text="Trieste" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/getDirectionsButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/getDirectionsButton"
-                    app:fabSize="mini"
+                    android:contentDescription="@string/get_directions_alt_text"
                     android:src="@drawable/ic_round_directions_24"
                     app:backgroundTint="@color/blue_gmaps"
+                    app:fabSize="mini"
                     app:tint="?attr/colorSurface" />
 
 
@@ -117,8 +120,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="10dp"
-                tools:text="Sed eum laoreet sed et clita sanctus quis. Magna in dolor sed. Sea voluptua takimata dolor ut consetetur volutpat aliquip diam dolor nulla vulputate takimata lorem ipsum sed sadipscing consequat iusto. Illum ut vero no no sanctus veniam amet tempor minim no dolor sed dignissim nonumy exerci sea sadipscing at. Amet accusam tempor sadipscing quis ipsum sanctus ipsum sed sed eirmod elitr voluptua takimata blandit. Dolor commodo clita iriure nulla luptatum et at velit. Diam tempor consequat. Et amet nibh molestie.\n\nDolor stet aliquyam kasd sit duis eos et invidunt et aliquam et tempor luptatum vero. Sanctus consequat nibh imperdiet accusam exerci est tincidunt accusam justo accusam tempor. Et esse ullamcorper aliquyam elitr eirmod sea et voluptua gubergren dolor no nibh eos suscipit velit sanctus lorem. Sit sed sadipscing erat sea ipsum nonumy consetetur no dolore suscipit magna elitr tempor et sit autem no ut."
-                android:textAppearance="?attr/textAppearanceBody1" />
+                android:textAppearance="?attr/textAppearanceBody1"
+                tools:text="Sed eum laoreet sed et clita sanctus quis. Magna in dolor sed. Sea voluptua takimata dolor ut consetetur volutpat aliquip diam dolor nulla vulputate takimata lorem ipsum sed sadipscing consequat iusto. Illum ut vero no no sanctus veniam amet tempor minim no dolor sed dignissim nonumy exerci sea sadipscing at. Amet accusam tempor sadipscing quis ipsum sanctus ipsum sed sed eirmod elitr voluptua takimata blandit. Dolor commodo clita iriure nulla luptatum et at velit. Diam tempor consequat. Et amet nibh molestie.\n\nDolor stet aliquyam kasd sit duis eos et invidunt et aliquam et tempor luptatum vero. Sanctus consequat nibh imperdiet accusam exerci est tincidunt accusam justo accusam tempor. Et esse ullamcorper aliquyam elitr eirmod sea et voluptua gubergren dolor no nibh eos suscipit velit sanctus lorem. Sit sed sadipscing erat sea ipsum nonumy consetetur no dolore suscipit magna elitr tempor et sit autem no ut." />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/ownerButton"
@@ -128,26 +131,26 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginHorizontal="10dp"
                 android:paddingVertical="10dp"
-                tools:text="Antani"
                 android:textAllCaps="false"
                 android:textColor="?attr/colorOnSurface"
                 app:icon="@drawable/ic_round_person_24"
                 app:iconPadding="20dp"
-                app:iconTint="?attr/colorOnSurface" />
+                app:iconTint="?attr/colorOnSurface"
+                tools:text="Antani" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="10dp"
-                android:text="Nella categoria" />
+                android:text="@string/in_category_label" />
 
             <TextView
                 android:id="@+id/itemCategoryTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="10dp"
-                tools:text="Accessori"
-                android:textAppearance="?attr/textAppearanceBody1" />
+                android:textAppearance="?attr/textAppearanceBody1"
+                tools:text="Accessori" />
 
 
         </LinearLayout>
@@ -160,6 +163,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminate="true" />
-
 
 </FrameLayout>

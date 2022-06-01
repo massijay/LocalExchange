@@ -9,20 +9,22 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Inserisci il tuo numero per completare la registrazione" />
+        android:labelFor="@id/phoneNumberEditText"
+        android:text="@string/insert_number_to_complete_label" />
 
     <EditText
+        android:id="@+id/phoneNumberEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/phoneNumberEditText"
+        android:autofillHints="phone"
         android:inputType="phone"
         android:textAlignment="center" />
 
     <Button
+        android:id="@+id/finishSignUpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Conferma"
-        android:id="@+id/finishSignUpButton" />
+        android:text="@string/confirm" />
 
 </LinearLayout>

@@ -19,6 +19,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.mcris.localexchange.R;
 import com.mcris.localexchange.databinding.FragmentItemDetailsBinding;
 import com.mcris.localexchange.viewmodels.MainViewModel;
 
@@ -57,17 +58,18 @@ public class ItemDetailsFragment extends Fragment {
                         if (item.getPicture() != null) {
                             binding.itemImageView.setImageBitmap(item.getPicture());
                         }
-                        binding.itemDateTextView.setText(getFriendlyDate(item.getDate()));
+                        binding.itemDateTextView.setText(getFriendlyDate(item.getDate(), mainViewModel.getApplication()));
                         binding.itemNameTextView.setText(item.getName());
                         binding.itemPriceTextView.setText(String.format(Locale.getDefault(),
                                 "%.2f €", item.getPrice()));
-                        binding.itemTypeTextView.setText(item.getTypology().toString());
                         TypedValue typedValue = new TypedValue();
                         switch (item.getTypology()) {
                             case SELL:
+                                binding.itemTypeTextView.setText(R.string.sell);
                                 getActivity().getTheme().resolveAttribute(com.google.android.material.R.attr.colorSecondary, typedValue, true);
                                 break;
                             case BUY:
+                                binding.itemTypeTextView.setText(R.string.buy);
                                 getActivity().getTheme().resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true);
                                 break;
                             default:
@@ -85,7 +87,7 @@ public class ItemDetailsFragment extends Fragment {
                             if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                                 startActivity(mapIntent);
                             } else {
-                                Toast.makeText(getActivity(), "Installa l'app Google Maps per visualizzare l'oggetto", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), R.string.install_maps_to_get_directions, Toast.LENGTH_LONG).show();
                             }
                         });
                         binding.ownerButton.setOnClickListener(v -> {

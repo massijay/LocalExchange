@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:autofillHints=""
-            android:hint="Cerca qualcosa"
+            android:hint="@string/search_something_hint"
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1" />
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:contentDescription="Insert your item"
+            android:contentDescription="@string/find_alt_text"
             android:src="@drawable/ic_outline_search_24"
             app:backgroundTint="@color/blue_gmaps"
             app:fabSize="mini"
@@ -44,7 +44,7 @@
         android:id="@+id/inCategoryTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nella categoria"
+        android:text="@string/in_category_label"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchLinearLayout" />
 

@@ -23,6 +23,7 @@
                 android:layout_margin="-10dp"
                 android:adjustViewBounds="true"
                 android:maxHeight="350dp"
+                tools:ignore="ContentDescription"
                 tools:src="@drawable/test_product" />
 
             <LinearLayout
@@ -36,6 +37,7 @@
                     android:id="@+id/cameraButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/Take_picture_alt_text"
                     android:src="@drawable/ic_round_add_a_photo_24"
                     app:backgroundTint="@color/blue_gmaps"
                     app:fabSize="mini"
@@ -45,6 +47,7 @@
                     android:id="@+id/galleryButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/select_photo_alt_text"
                     android:src="@drawable/ic_baseline_photo_library_24"
                     app:backgroundTint="@color/blue_gmaps"
                     app:fabSize="mini"
@@ -56,13 +59,17 @@
                 android:id="@+id/nameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Inserisci il nome" />
+                android:hint="@string/insert_name_hint"
+                android:inputType="text"
+                tools:ignore="Autofill" />
 
             <EditText
                 android:id="@+id/priceEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Inserisci il prezzo in €" />
+                android:hint="@string/insert_price_hint"
+                android:inputType="numberDecimal"
+                tools:ignore="Autofill" />
 
             <com.google.android.material.button.MaterialButtonToggleGroup
                 android:id="@+id/typologyButtonGroup"
@@ -78,7 +85,7 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Offro"
+                    android:text="@string/i_offer_button"
                     android:theme="@style/ThemeOverlay.SecondaryColorMaterialButton"
                     app:backgroundTint="?attr/colorSurface" />
 
@@ -87,7 +94,7 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cerco"
+                    android:text="@string/i_request_button"
                     app:backgroundTint="?attr/colorSurface" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -95,14 +102,16 @@
                 android:id="@+id/descriptionEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Inserisci una descrizione" />
+                android:hint="@string/insert_description_hint"
+                android:inputType="text"
+                tools:ignore="Autofill" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="5dp"
-                android:text="Scegli una categoria" />
+                android:text="@string/select_category_label" />
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/categoriesSpinner"
@@ -115,17 +124,17 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="15dp"
-                android:text="Carica!" />
+                android:text="@string/upload_button" />
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/uploadingIndicator"
-        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:indeterminate="true" />
+        android:indeterminate="true"
+        android:visibility="gone" />
 
 </FrameLayout>

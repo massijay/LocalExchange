@@ -2,6 +2,7 @@ package com.mcris.localexchange.views;
 
 import static com.mcris.localexchange.helpers.Utils.getFriendlyDate;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.mcris.localexchange.R;
 import com.mcris.localexchange.databinding.FragmentUserInfoBinding;
 import com.mcris.localexchange.viewmodels.MainViewModel;
 
@@ -29,6 +31,7 @@ public class UserInfoFragment extends Fragment {
         mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
     }
 
+    @SuppressLint("SetTextI18n")
     @SuppressWarnings("ConstantConditions")
     @Nullable
     @Override
@@ -41,15 +44,15 @@ public class UserInfoFragment extends Fragment {
                         binding.contactNameTextView.setText(user.getName());
 
                         binding.emailTextView.setText(user.getEmailAddress());
-                        binding.smsTextView.setText("SMS: " + user.getPhoneNumber());
-                        binding.callTextView.setText("Chiama: " + user.getPhoneNumber());
-                        binding.signUpDateTextView.setText(getFriendlyDate(user.getDate()));
+                        binding.smsTextView.setText(getString(R.string.sms) + ": " + user.getPhoneNumber());
+                        binding.callTextView.setText(getString(R.string.call) + ": " + user.getPhoneNumber());
+                        binding.signUpDateTextView.setText(getFriendlyDate(user.getDate(), mainViewModel.getApplication()));
 
                         binding.sendMailButton.setOnClickListener(v -> {
                             Intent intent = new Intent(Intent.ACTION_SENDTO);
-                            intent.setData(Uri.parse("mailto:"));
-                            intent.putExtra(Intent.EXTRA_EMAIL, user.getEmailAddress());
-                            intent.putExtra(Intent.EXTRA_SUBJECT, "Informazioni su " + mainViewModel.getSelectedItem().getName());
+                            intent.setData(Uri.parse("mailto:" + user.getEmailAddress()));
+                            intent.putExtra(Intent.EXTRA_SUBJECT,
+                                    getString(R.string.info_about_string) + " " + mainViewModel.getSelectedItem().getName());
                             if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
                                 startActivity(intent);
                             }

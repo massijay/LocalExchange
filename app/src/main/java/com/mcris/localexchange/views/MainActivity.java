@@ -7,14 +7,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -28,7 +26,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
-import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -66,12 +63,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // See: https://developer.android.com/training/basics/intents/result
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
             new FirebaseAuthUIActivityResultContract(),
-            new ActivityResultCallback<FirebaseAuthUIAuthenticationResult>() {
-                @Override
-                public void onActivityResult(FirebaseAuthUIAuthenticationResult result) {
-                    onSignInResult(result);
-                }
-            }
+            result -> onSignInResult(result)
     );
 
     @Override
@@ -95,21 +87,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .build();
 
         PopupMenu popupMenu = new PopupMenu(this, binding.moreButton);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.string.add_menu_item) {
-                    navigateToFragment(UploadItemFragment.class);
-                    expandBottomSheet();
-                } else if (item.getItemId() == R.string.settings_menu_item) {
-                    mainViewModel.getLoggedUserInfoIfExisting(user -> Log.i("SHT", "Logged user: " + (user != null ? user.getName() : "NULL")));
-                } else if (item.getItemId() == R.string.login_menu_item) {
-                    signInLauncher.launch(signInIntent);
-                } else if (item.getItemId() == R.string.logout_menu_name) {
-                    AuthUI.getInstance().signOut(MainActivity.this);
-                }
-                return true;
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.string.add_menu_item) {
+                navigateToFragment(UploadItemFragment.class);
+                expandBottomSheet();
+            } else if (item.getItemId() == R.string.login_menu_item) {
+                signInLauncher.launch(signInIntent);
+            } else if (item.getItemId() == R.string.logout_menu_name) {
+                AuthUI.getInstance().signOut(MainActivity.this);
             }
+            return true;
         });
 
         if (savedInstanceState == null) {
@@ -123,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         binding.moreButton.setOnClickListener(v -> {
             popupMenu.getMenu().clear();
-            popupMenu.getMenu().add(Menu.NONE, R.string.settings_menu_item, 5, R.string.settings_menu_item);
             if (mainViewModel.isUserLoggedIn()) {
                 popupMenu.getMenu().add(Menu.NONE, R.string.add_menu_item, 2, R.string.add_menu_item);
                 popupMenu.getMenu().add(Menu.NONE, R.string.logout_menu_name, 10, R.string.logout_menu_name);
@@ -161,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Boolean coarseLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false);
 
                             if (Boolean.TRUE.equals(fineLocationGranted) || Boolean.TRUE.equals(coarseLocationGranted)) {
-                                Log.d("AAA", "LOCAZIONE CONCESSA");
+                                Log.d(MainViewModel.TAG, "Location permission granted");
                                 CancellationTokenSource cts = new CancellationTokenSource();
 
                                 fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, cts.getToken())
@@ -179,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     mapFragment.getMapAsync(this);
                                 }
                             } else {
-                                Log.d("AAA", "NESSUNA LOCAZIONE CONCESSA");
+                                Log.w(MainViewModel.TAG, "Location permission denied");
                             }
                         }
                 );
@@ -192,14 +178,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mainViewModel.downloadCategories();
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @SuppressLint("PotentialBehaviorOverride")
     // that can occur with mMap.setOnMarkerClickListener(clusterManager)
     // click listener has to be set on the clusterManager itself
@@ -210,17 +188,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         binding.supplyToggleButton.addOnCheckedChangeListener((button, isChecked) -> {
             if (isChecked) {
-                mainViewModel.setTypeOfSearch(Item.Typology.SELL);
-                mainViewModel.getObservableItems().clear();
-                obtainItems();
+                selectSearchTypology(Item.Typology.SELL);
                 goBackToRootFragment();
             }
         });
         binding.demandToggleButton.addOnCheckedChangeListener((button, isChecked) -> {
             if (isChecked) {
-                mainViewModel.setTypeOfSearch(Item.Typology.BUY);
-                mainViewModel.getObservableItems().clear();
-                obtainItems();
+                selectSearchTypology(Item.Typology.BUY);
                 goBackToRootFragment();
             }
         });
@@ -265,6 +239,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
+    public void selectSearchTypology(Item.Typology typology) {
+        mainViewModel.setTypeOfSearch(typology);
+        mainViewModel.getObservableItems().clear();
+        obtainItems();
+    }
+
     private void obtainItems() {
         // latLngBounds contain the north-east and south-west coordinates
         // of the rectangle just outside of the screen
@@ -301,14 +281,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
-        IdpResponse response = result.getIdpResponse();
         if (result.getResultCode() == RESULT_OK) {
             completeSignUpIfNeeded();
         }
-    }
-
-    public <T extends Fragment> void navigateToFragment(Class<T> fragmentClass) {
-        navigateToFragment(fragmentClass, false);
     }
 
     public void goBackToRootFragment() {
@@ -320,7 +295,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public <T extends Fragment> void navigateToFragment(Class<T> fragmentClass, boolean isRoot) {
+    public <T extends Fragment> void navigateToFragment(Class<T> fragmentClass) {
+        navigateToFragment(fragmentClass, false);
+    }
+
+    private <T extends Fragment> void navigateToFragment(Class<T> fragmentClass, boolean isRoot) {
         sheetStateBeforeLastNavigation = sheetBehavior.getState();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true)

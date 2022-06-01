@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="supply_toggle_button_text">OFFERTA</string>
+    <string name="demand_toggle_button_text">DOMANDA</string>
+    <string name="login_menu_item">Login</string>
+    <string name="logout_menu_name">Logout</string>
+    <string name="settings_menu_item">Impostazioni</string>
+    <string name="add_menu_item">Crea annuncio</string>
+    <string name="app_name">Local Exchange</string>
+    <string name="title_activity_main">Local Exchange</string>
+    <string name="today">Oggi</string>
+    <string name="yesterday">Ieri</string>
+    <string name="sell">Offerta</string>
+    <string name="buy">Richiesta</string>
+    <string name="install_maps_to_get_directions">Installa Google Maps sul tuo dispositivo per ottenere indicazioni</string>
+    <string name="wrong_price_format">Formato prezzo non corretto</string>
+    <string name="sms">SMS</string>
+    <string name="call">Chiama</string>
+    <string name="info_about_string">Informazioni su</string>
+    <string name="find_alt_text">Cerca</string>
+    <string name="more_alt_text">Altre opzioni</string>
+    <string name="search_something_hint">Cerca qualcosa...</string>
+    <string name="in_category_label">Nella categoria</string>
+    <string name="insert_number_to_complete_label">Inserisci il tuo numero per completare la registrazione</string>
+    <string name="confirm">Conferma</string>
+    <string name="get_directions_alt_text">Apri in Google Maps</string>
+    <string name="send_mail_alt_text">Manda un\'email</string>
+    <string name="send_sms_alt_text">Manda un SMS</string>
+    <string name="add_contact_label">Aggiungi ai contatti</string>
+    <string name="registered_since_label">Registrato dal</string>
+    <string name="Take_picture_alt_text">Fai una foto</string>
+    <string name="select_photo_alt_text">Scegli una foto dalla galleria</string>
+    <string name="insert_name_hint">Nome</string>
+    <string name="insert_price_hint">Prezzo</string>
+    <string name="i_offer_button">Offro</string>
+    <string name="i_request_button">Cerco</string>
+    <string name="insert_description_hint">Descrizione dell\'annuncio</string>
+    <string name="select_category_label">Scegli la categoria</string>
+    <string name="upload_button">Crea annuncio!</string>
+</resources>
