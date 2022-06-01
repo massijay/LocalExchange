@@ -295,7 +295,7 @@ public class MainViewModel extends AndroidViewModel {
                                         OnFailureListener failureListener) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
-        StorageReference ref = storage.getReference().child("images/" + filename);
+        StorageReference ref = storage.getReference(getLoggedFirebaseUser().getUid() + "/" + filename);
         ref.putBytes(data)
                 .addOnSuccessListener(listener)
                 .addOnFailureListener(failureListener);
