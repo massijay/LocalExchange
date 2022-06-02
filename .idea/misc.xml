@@ -5,9 +5,12 @@
       <map>
         <entry key="..\:/Programmi-(x86)/Android/android-sdk/platforms/android-31/data/res/layout/simple_list_item_2.xml" value="0.21529888551165147" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.31" />
+        <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable-v24/local_exchange_material_design_icon.xml" value="0.1565" />
+        <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/ic_baseline_photo_library_24.xml" value="0.1565" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/ic_launcher_background.xml" value="0.31" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/ic_outline_filter_alt_24.xml" value="0.411" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/ic_outline_search_24.xml" value="0.312" />
+        <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/ic_round_add_24.xml" value="0.1565" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/ic_round_directions_24.xml" value="0.2935" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/ic_round_location_on_24.xml" value="0.2935" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/drawable/ic_round_person_24.xml" value="0.371" />
@@ -30,6 +33,8 @@
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/layout/fragment_user_info.xml" value="0.28125" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/layout/item_recycler_view_row.xml" value="0.4427083333333333" />
         <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/layout/main_menu_layout.xml" value="0.4427083333333333" />
+        <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1565" />
+        <entry key="..\:/Users/mcris/Source/Repos/Localexchange/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1565" />
       </map>
     </option>
   </component>
