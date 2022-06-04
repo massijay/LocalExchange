@@ -12,4 +12,24 @@ Since the main way to navigate through the platform content is using the map tha
 
 The app adapts to the system theme and language, with Italian and English localizations available.
 
-## Screenshots
+## Some screenshots
+### Main map view
+In the main view the map is entirely visible and shows a preview of the items directly on it.
+
+<img src="https://github.com/massijay/LocalExchange/blob/1c98163b779f3761d7f814fa880667e2411cdc28/screenshot/main_view.png" height="500">
+
+### List view
+Expanding the bottom sheet there is a list with the same items currently shown in the map, useful when there are many items.
+
+<img src="https://github.com/massijay/LocalExchange/blob/1c98163b779f3761d7f814fa880667e2411cdc28/screenshot/list_view.png" height="500">
+
+### Item details view
+Tapping on a item either on the map or in the list opens the item's details view with all informations as well as a button to view the item location on Google Maps to show directions.
+
+<img src="https://github.com/massijay/LocalExchange/blob/1c98163b779f3761d7f814fa880667e2411cdc28/screenshot/details_view.png" height="500">
+
+### Add announce view
+Users can add their announce with all details with the ability to take a photo with the camera or choose it from the gallery
+
+<img src="https://github.com/massijay/LocalExchange/blob/1c98163b779f3761d7f814fa880667e2411cdc28/screenshot/upload_view.png" height="500">
+
