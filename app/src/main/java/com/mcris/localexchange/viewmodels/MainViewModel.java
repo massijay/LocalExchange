@@ -1,5 +1,6 @@
 package com.mcris.localexchange.viewmodels;
 
+import static com.mcris.localexchange.helpers.Utils.TAG;
 
 import android.app.Application;
 import android.graphics.BitmapFactory;
@@ -51,9 +52,6 @@ public class MainViewModel extends AndroidViewModel {
 
     private Item selectedItem;
     private User loggedUser;
-
-    public static final String TAG = "LEA";
-
 
     public LatLngBounds getLatLngBounds() {
         return latLngBounds;

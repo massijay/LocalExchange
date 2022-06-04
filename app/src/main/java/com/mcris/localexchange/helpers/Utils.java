@@ -13,6 +13,8 @@ import java.util.Random;
 public class Utils {
     private static final Random random = new Random();
 
+    public static final String TAG = "LEA";
+
     public static String getFriendlyDate(LocalDate date, Context context) {
         if (date.equals(LocalDate.now())) {
             return context.getString(R.string.today);

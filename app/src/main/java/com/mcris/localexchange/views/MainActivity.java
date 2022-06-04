@@ -1,5 +1,7 @@
 package com.mcris.localexchange.views;
 
+import static com.mcris.localexchange.helpers.Utils.TAG;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -147,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Boolean coarseLocationGranted = result.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false);
 
                             if (Boolean.TRUE.equals(fineLocationGranted) || Boolean.TRUE.equals(coarseLocationGranted)) {
-                                Log.d(MainViewModel.TAG, "Location permission granted");
+                                Log.d(TAG, "Location permission granted");
                                 CancellationTokenSource cts = new CancellationTokenSource();
 
                                 fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, cts.getToken())
@@ -165,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     mapFragment.getMapAsync(this);
                                 }
                             } else {
-                                Log.w(MainViewModel.TAG, "Location permission denied");
+                                Log.w(TAG, "Location permission denied");
                             }
                         }
                 );
