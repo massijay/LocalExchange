@@ -17,13 +17,10 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.mcris.localexchange.models.GsonRequest;
 import com.mcris.localexchange.models.entities.Category;
 import com.mcris.localexchange.models.entities.Item;
@@ -289,32 +286,4 @@ public class MainViewModel extends AndroidViewModel {
                         });
         queue.add(categoryTableRequest);
     }
-
-    public void uploadItem(Item item, Consumer<Item> afterUploadAction) {
-        RequestQueue queue = Volley.newRequestQueue(getApplication());
-        GsonRequest<Table<Item>> itemUploadRequest = AirtableApiService.getInstance(getApplication())
-                .addNewItem(item,
-                        response -> {
-                            Item downloaded = response.getRecords().get(0).getRow();
-                            afterUploadAction.accept(downloaded);
-                        },
-                        error -> {
-                            Toast.makeText(getApplication(), "Error uploading announce", Toast.LENGTH_SHORT).show();
-                            Log.e(TAG, "Error uploading item: ", error);
-                        });
-
-        queue.add(itemUploadRequest);
-    }
-
-    public void uploadToFirebaseStorage(String filename, byte[] data,
-                                        OnSuccessListener<UploadTask.TaskSnapshot> listener,
-                                        OnFailureListener failureListener) {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-
-        StorageReference ref = storage.getReference(getLoggedFirebaseUser().getUid() + "/" + filename);
-        ref.putBytes(data)
-                .addOnSuccessListener(listener)
-                .addOnFailureListener(failureListener);
-    }
-
 }
