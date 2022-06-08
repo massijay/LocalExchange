@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
+                .setLogo(R.drawable.local_exchange_material_design_icon_circle)
                 .build();
 
         PopupMenu popupMenu = new PopupMenu(this, binding.moreButton);
