@@ -242,7 +242,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
-    public void selectSearchTypology(Item.Typology typology) {
+    public void setTypologyButtonChecked(Item.Typology typology) {
+        if (typology.equals(Item.Typology.SELL) && !binding.supplyToggleButton.isChecked()) {
+            binding.supplyToggleButton.setChecked(true);
+        }
+        if (typology.equals(Item.Typology.BUY) && !binding.demandToggleButton.isChecked()) {
+            binding.demandToggleButton.setChecked(true);
+        }
+    }
+
+    private void selectSearchTypology(Item.Typology typology) {
         mainViewModel.setTypeOfSearch(typology);
         mainViewModel.getObservableItems().clear();
         obtainItems();

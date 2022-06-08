@@ -82,9 +82,8 @@ public class UploadItemFragment extends Fragment {
                         stopLoadingIndicator();
                         MainActivity mainActivity = (MainActivity) getActivity();
                         if (mainActivity != null) {
-                            mainActivity.selectSearchTypology(uploadedItem.getTypology());
+                            mainActivity.setTypologyButtonChecked(uploadedItem.getTypology());
                             mainActivity.focusItemOnMap(uploadedItem);
-                            mainActivity.goBackToRootFragment();
                         }
                     },
                     this::handleUploadError);
